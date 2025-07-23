@@ -1,6 +1,7 @@
 // src/components/SideBar.jsx
 import { useNavigate } from "react-router-dom";
 import Nav from "react-bootstrap/Nav";
+import { Image } from "react-bootstrap";
 
 function SideBar() {
   const navigate = useNavigate();
@@ -15,6 +16,10 @@ function SideBar() {
       }}
     >
       <Nav defaultActiveKey="/dashboard" className="flex-column">
+        <Nav.Link onClick={() => navigate("/profile")}>
+           
+          <Image src="https://www.bigfootdigital.co.uk/how-to-optimise-images" roundedCircle />
+        </Nav.Link>
         <Nav.Link onClick={() => navigate("/dashboard")}>
           Dashboard
         </Nav.Link>
