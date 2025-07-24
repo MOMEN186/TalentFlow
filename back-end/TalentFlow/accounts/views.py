@@ -1,4 +1,5 @@
 # accounts/views.py
+import os
 from rest_framework.decorators import api_view, permission_classes, parser_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -12,6 +13,7 @@ from rest_framework_simplejwt.serializers import (
 )
 from django.conf import settings
 from rest_framework.parsers import MultiPartParser, FormParser
+from decouple import config
 
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = TokenObtainPairSerializer  # Fixed typo: serialzer -> serializer
@@ -115,6 +117,7 @@ def logout_view(request):
 @parser_classes([MultiPartParser, FormParser])
 def upload_photo(req):
     try:
+        print(config("CLOUD_NAME"))
         print(f"User: {req.user}")
         print(f"Content-Type: {req.content_type}")
         print(f"Request FILES: {req.FILES}")

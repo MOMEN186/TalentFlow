@@ -5,7 +5,7 @@ function Payroll() {
 
   const api = useAxios();
   useEffect(() => {
-    const get = async () => await api("http://localhost:8000/api/payroll");
+    const get = async () => await api("http://localhost:8000/api/payroll/");
     get();
   }, []);
   return (

@@ -10,10 +10,31 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+
 from pathlib import Path
 from decouple import config
 from datetime import timedelta
 import dj_database_url
+import cloudinary 
+import cloudinary.uploader
+import cloudinary.api
+
+
+
+cloudinary.config(
+    cloud_name=config("CLOUD_NAME"), 
+                  api_key=config("API_KEY"),
+                  api_secret=config("API_SECRET"))
+
+CLOUDINARY_STORAGE = {
+    # "CLOUD_NAME": config("CLOUD_NAME"),
+    # "API_KEY":   config("API_KEY"),
+    # "API_SECRET": config("API_SECRET"),
+    # # (optional) folder prefix for your uploads:
+    "FOLDER":     "talentflow/profile_photos",
+}
+
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -30,10 +51,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-MEDIA_URL  = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+# MEDIA_URL  = '/media/'
+# MEDIA_ROOT = BASE_DIR / 'media'
 # Application definition
-DEFAULT_FILE_STORAGE = 'db_file_storage.storage.DatabaseFileStorage'
 DB_FILES_AUTO_EXPORT_DB_TO_FS = False  # Set to
 
 INSTALLED_APPS = [
@@ -51,7 +71,11 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
     "corsheaders",
+        "cloudinary",
 ]
+
+DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+
 
 
 
