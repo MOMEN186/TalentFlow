@@ -1,31 +1,15 @@
 import Form from "react-bootstrap/Form";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import Button from "react-bootstrap/Button";
-import { login } from "../controllers/loginController";
-import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../App";
-
+import { AuthContext } from "../contexts/AuthContext";
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate();
-  const { user, setUser } = useContext(AuthContext);
-
+  const { login } = useContext(AuthContext);
   const handleClick = async (e) => {
     e.preventDefault();
-    const res = await login(email, password);
-    setUser({
-      email,
-      access: res.access,
-      refresh: res.refresh,
-    });
-    navigate("/");
-    };
-    
-
-    useEffect(() => {
-        console.log(user);
-    }, [user]);
+    login(email,password);
+  };
 
   return (
     <Form>
