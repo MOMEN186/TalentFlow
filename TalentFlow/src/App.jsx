@@ -6,6 +6,7 @@ import Dashboard from "./pages/Dashboard";
 import PayRoll from "./pages/Payroll";     
 import NotFound from "./pages/NotFound";
 import LeaveNote from "./pages/LeaveNote";
+import EmployeeDetais from "./pages/EmployeeDetails";
 function App() {
   return (
     <div style={{ display: "flex", height: "100vh" }}>
@@ -15,6 +16,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Employees />} />
             <Route path="/employees" element={<Employees />} />
+            <Route path="/employees/:id" element={<EmployeeDetais />} />
             <Route path="/payroll" element={<PayRoll/>} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/leave_note" element={<LeaveNote/>} />
