@@ -8,7 +8,7 @@ from django.db import transaction
 from django.db.models import Q
 from .models import Department, JobTitle, Employee
 from accounts.permissions import IsAdminOrHR,IsOwnerAdminOrHR,IsAdmin,IsHR
-from TalenFlow.pagination import StandardResultsSetPagination
+from TalentFlow.pagination import StandardResultsSetPagination
 
 from .serializers import (
     DepartmentSerializer,

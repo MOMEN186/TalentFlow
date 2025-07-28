@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404
 from .models import LeaveRequest
 from employees.models import Employee
 from accounts.permissions import IsAdminOrHR, IsOwnerAdminOrHR
-from TalenFlow.pagination import StandardResultsSetPagination
+from TalentFlow.pagination import StandardResultsSetPagination
 from .serializers import (
     LeaveRequestSerializer,
     LeaveRequestUpdateSerializer,
