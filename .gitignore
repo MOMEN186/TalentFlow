@@ -23,3 +23,12 @@ dist-ssr
 *.sln
 *.sw?
 .env
+# Byte-compiled / optimized / DLL files
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+*.pyo
+*.pyd
+.Python
