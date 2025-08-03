@@ -5,6 +5,7 @@ import Dashboard from "./pages/Dashboard";
 import PayRoll from "./pages/Payroll";
 import NotFound from "./pages/NotFound";
 import LeaveNote from "./pages/LeaveNote";
+import EmployeeDetais from "./pages/EmployeeDetails";
 import Login from "./pages/Login";
 import { AuthProvider } from "./providers/AuthProvider";
 import Profile from "./pages/Profile";
@@ -19,35 +20,14 @@ function App() {
           <div className="container my-3">
             <Routes>
               <Route path="/login" element={<Login />} />
-              
-              <Route
-                path="/"
-                element={<ProtectedRoute element={<Dashboard />} />}
-              />
-              <Route
-                path="/dashboard"
-                element={<ProtectedRoute element={<Dashboard />} />}
-              />
-              <Route
-                path="/employees"
-                element={<ProtectedRoute element={<Employees />} />}
-              />
-              <Route
-                path="/payroll"
-                element={<ProtectedRoute element={<PayRoll />} />}
-              />
-              <Route
-                path="/leave_note"
-                element={<ProtectedRoute element={<LeaveNote />} />}
-              />
-              <Route
-                path="/profile"
-                element={<ProtectedRoute element={<Profile />} />}
-              />
-              <Route
-                path="*"
-                element={<ProtectedRoute element={<NotFound />} />}
-              />
+              <Route path="/" element={<ProtectedRoute element={<Dashboard />} />} />
+              <Route path="/dashboard" element={<ProtectedRoute element={<Dashboard />} />} />
+              <Route path="/employees" element={<ProtectedRoute element={<Employees />} />} />
+              <Route path="/employees/:id" element={<ProtectedRoute element={<EmployeeDetais />} />} />
+              <Route path="/payroll" element={<ProtectedRoute element={<PayRoll />} />} />
+              <Route path="/leave_note" element={<ProtectedRoute element={<LeaveNote />} />} />
+              <Route path="/profile" element={<ProtectedRoute element={<Profile />} />} />
+              <Route path="*" element={<ProtectedRoute element={<NotFound />} />} />
             </Routes>
           </div>
         </div>
