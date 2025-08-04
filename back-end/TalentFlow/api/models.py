@@ -4,7 +4,12 @@ from django.core.validators import RegexValidator
 
 
 class Employee(models.Model):
-    name = models.CharField(max_length=255)
+    first_name = models.CharField(max_length=255, null=False, blank=False)
+    middle_name = models.CharField(max_length=255, null=False, blank=False)
+    last_name = models.CharField(max_length=255, null=False, blank=False)
+    gender = models.CharField(
+        max_length=10, choices=[("Male", "Male"), ("Female", "Female")]
+    )
     email = models.EmailField(max_length=255)
     phone= models.CharField(max_length=20,validators=[RegexValidator(r'^\+?\d{7,15}$', message="Enter a valid phone number.")])
     address = models.CharField(max_length=255)
@@ -13,7 +18,7 @@ class Employee(models.Model):
     job_title=models.ForeignKey('JobTitle',on_delete=models.PROTECT,related_name='employee')
     salary=models.ForeignKey('PayRoll',on_delete=models.PROTECT,related_name='employee')
     def __str__(self):
-        return self.name
+        return self.first_name
     class Meta:
         db_table = 'employee'
 
@@ -50,6 +55,14 @@ class PayRoll(models.Model):
     tax=models.DecimalField(max_digits=10, decimal_places=2)
     bonus=models.DecimalField(max_digits=10, decimal_places=2)
     deductions=models.DecimalField(max_digits=10, decimal_places=2)
+    
     def __str__(self):
-        return f"{self.name} - {self.date.date()}"
+        return f"{self.name} - {self.date.strftime('%Y-%m-%d')}"
+
+    
+    def save(self, *args, **kwargs):
+        # Calculate gross and net before saving
+        self.gross_pay = self.compensation + self.bonus
+        self.net_pay = self.gross_pay - self.tax - self.deductions
+        super().save(*args, **kwargs)
 

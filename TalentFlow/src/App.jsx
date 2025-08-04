@@ -17,7 +17,7 @@ function App() {
       <div style={{ display: "flex", height: "100vh" }}>
         <SideBar />
         <div style={{ flex: 1, overflowY: "auto" }}>
-          <div className="container my-3">
+          <div className="my-3" style={{ width: '100%' }}>
             <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/" element={<ProtectedRoute element={<Dashboard />} />} />
