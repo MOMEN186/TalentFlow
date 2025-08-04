@@ -229,3 +229,10 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOW_ALL_ORIGINS = True
+
+CORS_ALLOW_HEADERS = [  # include Authorization
+    "authorization",
+    "content-type",
+
+]
+CORS_PREFLIGHT_MAX_AGE = 86400 
