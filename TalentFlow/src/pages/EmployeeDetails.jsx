@@ -69,7 +69,7 @@ function EmployeeDetais() {
               </tr>
               <tr>
                 <td>Deduction</td>
-                <td>{employee?.salary.deductions}</td>
+                <td>{employee?.salary?.deductions}</td>
               </tr>
               <tr>
                 <td>Reason Time Date</td>
@@ -77,7 +77,7 @@ function EmployeeDetais() {
               </tr>
               <tr>
                 <td>Bonus</td>
-                <td>{employee?.salary.bonus}</td>
+                <td>{employee?.salary?.bonus}</td>
               </tr>
               <tr>
                 <td>Reason</td>

@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import Table from "react-bootstrap/Table";
 import { useNavigate } from "react-router-dom";
 import useAxios from "../utils/useAxios";
-
+import { handleDownload } from "../utils/file_download";
 function Employees() {
   const navigate = useNavigate();
   const api = useAxios();
@@ -17,14 +17,6 @@ function Employees() {
     getEmployees();
   }, []);
 
-  const goToDetails = (id) => {
-    navigate(`/employees/${id}`);
-  };
-
-  useEffect(() => {
-    console.log(employees);
-  }, [employees]);
-
   return (
     <div
       className="mt-4"
@@ -36,7 +28,15 @@ function Employees() {
         minHeight: "100vh",
       }}
     >
-      <h4 className="mb-4 text-primary">Employees</h4>
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <h4 className="text-primary">Employees </h4>
+        <button
+          className="btn btn-success"
+          onClick={() => handleDownload(api, "employees")}
+        >
+          Download Excel
+        </button>
+      </div>
       <Table
         striped
         bordered
@@ -67,7 +67,7 @@ function Employees() {
             employees.map((emp) => (
               <tr
                 key={emp.id}
-                onClick={() => goToDetails(emp.id)}
+                onClick={() => navigate((`/employees/${emp.id}`))}
                 style={{ cursor: "pointer" }}
               >
                 <td>{emp.id}</td>

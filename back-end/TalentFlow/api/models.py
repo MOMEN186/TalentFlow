@@ -16,7 +16,6 @@ class Employee(models.Model):
     date_joined=models.DateField(auto_now_add=True)
     department = models.ForeignKey('Department', on_delete=models.PROTECT,related_name='employee')
     job_title=models.ForeignKey('JobTitle',on_delete=models.PROTECT,related_name='employee')
-    salary=models.ForeignKey('PayRoll',on_delete=models.PROTECT,related_name='employee')
     def __str__(self):
         return self.first_name
     class Meta:
@@ -55,7 +54,10 @@ class PayRoll(models.Model):
     tax=models.DecimalField(max_digits=10, decimal_places=2)
     bonus=models.DecimalField(max_digits=10, decimal_places=2)
     deductions=models.DecimalField(max_digits=10, decimal_places=2)
-    
+    employee = models.ForeignKey(Employee, on_delete=models.PROTECT, related_name='payrolls')
+
+    class Meta:
+        unique_together = ('employee', 'date')
     def __str__(self):
         return f"{self.name} - {self.date.strftime('%Y-%m-%d')}"
 

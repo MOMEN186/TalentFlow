@@ -2,9 +2,20 @@ from rest_framework import serializers
 from .models import PayRoll,Department,JobTitle,Employee,LeaveNote
 
 class PayRollSerializer(serializers.ModelSerializer):
+    first_name = serializers.CharField(source="employee.first_name", read_only=True)
+    middle_name = serializers.CharField(source="employee.middle_name", read_only=True)
+    last_name = serializers.CharField(source="employee.last_name", read_only=True)
     class Meta:
         model = PayRoll
         fields = '__all__'
+    def get_first_name(self, obj):
+        return obj.employee.first_name if hasattr(obj, 'employee') else None
+
+    def get_middle_name(self, obj):
+        return obj.employee.middle_name if hasattr(obj, 'employee') else None
+
+    def get_last_name(self, obj):
+        return obj.employee.last_name if hasattr(obj, 'employee') else None
 
 class DepartmentSerializer(serializers.ModelSerializer):
     class Meta:
