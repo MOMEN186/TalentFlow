@@ -2,20 +2,23 @@ import React, { useEffect, useState } from "react";
 import useAxios from "../utils/useAxios";
 import Table from "react-bootstrap/Table";
 import { handleDownload } from "../utils/file_download";
+import Paginate from "../components/Paginate";
 function Payroll() {
   const [payroll, setPayroll] = useState([]);
+   const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
   const api = useAxios();
 
   useEffect(() => {
     const get = async () => {
-      const res = await api("/payroll/");
-      console.log(res.data)
-      setPayroll(res.data);
+      const res = await api(`/payroll/?page=${page}`);
+      setPayroll(res.data.results);
+      setTotalPages(Math.ceil(res.data.count / 50));
     };
     get();
-  }, []);
+  }, [page]);
 
-  useEffect(()=>{console.log(payroll);},[payroll])
 
   return (
     <div
@@ -23,7 +26,7 @@ function Payroll() {
       style={{
         flex: 1,
         width: "100%",
-        padding: "0 16px", // Add horizontal padding
+        padding: "0 16px",
         overflow: "auto",
         minHeight: "100vh",
       }}
@@ -60,9 +63,9 @@ function Payroll() {
         </thead>
         <tbody>
           {payroll&& payroll.length > 0 &&
-payroll.map((item, index) => (
+            payroll.map((item, index) => (
             <tr key={item.id}>
-              <td>{index + 1}</td>
+              <td>{(50*(page-1)+index+1)}</td>
               <td>{item.first_name}</td>
               <td>{item.last_name}</td>
               <td>{item.compensation}</td>
@@ -75,6 +78,7 @@ payroll.map((item, index) => (
           ))}
         </tbody>
       </Table>
+      <Paginate totalPages={totalPages} page={page} setPage={setPage} />
     </div>
   );
 }

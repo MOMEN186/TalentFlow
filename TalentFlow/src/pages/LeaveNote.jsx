@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import useAxios from "../utils/useAxios";
 import Table from "react-bootstrap/Table";
 import { handleDownload } from '../utils/file_download';
+import Paginate from '../components/Paginate';
 function LeaveNote() {
   const [leaveNotes, setLeaveNotes] = useState([]);
   const api = useAxios();
@@ -74,6 +75,7 @@ function LeaveNote() {
           )}
         </tbody>
       </Table>
+    
     </div>
   );
 }

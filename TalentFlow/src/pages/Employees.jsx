@@ -1,21 +1,30 @@
-import React, { useEffect } from "react";
+import  { useEffect, useState } from "react";
 import Table from "react-bootstrap/Table";
 import { useNavigate } from "react-router-dom";
 import useAxios from "../utils/useAxios";
 import { handleDownload } from "../utils/file_download";
+import Paginate from "../components/Paginate";
 function Employees() {
   const navigate = useNavigate();
   const api = useAxios();
-  const [employees, setEmployees] = React.useState([]);
+  const [employees, setEmployees] = useState([]);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
+
 
   useEffect(() => {
     const getEmployees = async () => {
-      const response = await api.get("/employees/");
-      console.log(response.data);
-      setEmployees(response.data);
+      // console.log(page)
+      const response = await api.get(`/employees/?page=${page}`);
+      // console.log(response.data);
+      setEmployees(response.data.results);
+      setTotalPages(Math.ceil(response.data.count / 50));
     };
     getEmployees();
-  }, []);
+  }, [page]);
+
+
 
   return (
     <div
@@ -50,6 +59,7 @@ function Employees() {
       >
         <thead>
           <tr>
+            <th style={{ width: "4%" }} >#</th>
             <th style={{ width: "4%" }}>Id</th>
             <th style={{ width: "10%" }}>First Name</th>
             <th style={{ width: "10%" }}>Last Name</th>
@@ -64,12 +74,13 @@ function Employees() {
         <tbody>
           {employees &&
             employees.length > 0 &&
-            employees.map((emp) => (
+            employees.map((emp,idx) => (
               <tr
                 key={emp.id}
-                onClick={() => navigate((`/employees/${emp.id}`))}
+                onClick={() => navigate(`/employees/${emp.id}`)}
                 style={{ cursor: "pointer" }}
               >
+                <td>{50*(page-1)+idx+1}</td>
                 <td>{emp.id}</td>
                 <td>{emp.first_name}</td>
                 <td>{emp.last_name}</td>
@@ -83,6 +94,7 @@ function Employees() {
             ))}
         </tbody>
       </Table>
+      <Paginate page={ page}  totalPages={totalPages} setPage={setPage} />
     </div>
   );
 }
