@@ -19,6 +19,8 @@ function Payroll() {
     get();
   }, [page]);
 
+useEffect(()=>{console.log(payroll);},[payroll])
+
 
   return (
     <div

@@ -12,7 +12,7 @@ function LeaveNote() {
     (async () => {
       try {
         const res = await api.get("/leave_notes/");
-        setLeaveNotes(res.data);
+        setLeaveNotes(res.data.results);
       } catch (err) {
         console.error("Failed to load leave notes:", err);
       }
@@ -32,7 +32,10 @@ function LeaveNote() {
     >
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h4 className="text-primary">Leave Notes</h4>
-        <button className="btn btn-success" onClick={()=>handleDownload(api,"leave_notes")}>
+        <button
+          className="btn btn-success"
+          onClick={() => handleDownload(api, "leave_notes")}
+        >
           Download Excel
         </button>
       </div>
@@ -58,12 +61,16 @@ function LeaveNote() {
           </tr>
         </thead>
         <tbody>
-          {leaveNotes.length === 0 ? (
+          {leaveNotes?.length === 0 ? (
             <tr>
-              <td colSpan={5} className="text-center">No leave notes found</td>
+              <td colSpan={5} className="text-center">
+                No leave notes found
+              </td>
             </tr>
           ) : (
-            leaveNotes.map(note => (
+            leaveNotes &&
+            leaveNotes.length&&
+            leaveNotes.map((note) => (
               <tr key={note.id}>
                 <td>{note.name}</td>
                 <td>{note.description}</td>
@@ -75,7 +82,6 @@ function LeaveNote() {
           )}
         </tbody>
       </Table>
-    
     </div>
   );
 }
