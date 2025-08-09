@@ -8,8 +8,12 @@ class Employee(models.Model):
     middle_name = models.CharField(max_length=255, null=False, blank=False)
     last_name = models.CharField(max_length=255, null=False, blank=False)
     gender = models.CharField(
-        max_length=10, choices=[("Male", "Male"), ("Female", "Female")]
+        max_length=10,
+        choices=[("Male", "Male"), ("Female", "Female")],
+        null=False,
+        blank=False,
     )
+    
     email = models.EmailField(max_length=255)
     phone= models.CharField(max_length=20,validators=[RegexValidator(r'^\+?\d{7,15}$', message="Enter a valid phone number.")])
     address = models.CharField(max_length=255)

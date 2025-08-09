@@ -2,20 +2,25 @@ from rest_framework import serializers
 from .models import PayRoll,Department,JobTitle,Employee,LeaveNote
 
 class PayRollSerializer(serializers.ModelSerializer):
-    first_name = serializers.CharField(source="employee.first_name", read_only=True)
-    middle_name = serializers.CharField(source="employee.middle_name", read_only=True)
-    last_name = serializers.CharField(source="employee.last_name", read_only=True)
+    employee = serializers.SerializerMethodField()
     class Meta:
         model = PayRoll
         fields = '__all__'
-    def get_first_name(self, obj):
-        return obj.employee.first_name if hasattr(obj, 'employee') else None
-
-    def get_middle_name(self, obj):
-        return obj.employee.middle_name if hasattr(obj, 'employee') else None
-
-    def get_last_name(self, obj):
-        return obj.employee.last_name if hasattr(obj, 'employee') else None
+        
+    def get_employee(self, obj):
+        emp=obj.employee
+        if not emp:
+            return None
+        return {
+            "id": emp.id,
+            "first_name": emp.first_name,
+            "middle_name": emp.middle_name,
+            "last_name": emp.last_name,
+            "email": emp.email,
+            "phone": emp.phone,
+            "department": emp.department.name if emp.department else None,
+            "job_title": emp.job_title.name if emp.job_title else None,
+        }
 
 class DepartmentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -33,20 +38,9 @@ class LeaveNoteSerializer(serializers.ModelSerializer):
 
      
 class EmployeeSerializer(serializers.ModelSerializer):
-    salary = PayRollSerializer(read_only=True)
+    salary = PayRollSerializer(source="payrolls",read_only=True,many=True)
     job_title = JobTitleSerializer(read_only=True)
     department = DepartmentSerializer(read_only=True)
     class Meta:
         model = Employee
-        fields = [
-            "id",
-            "first_name",
-            "middle_name",
-            "last_name",
-            "email",
-            "phone",
-            "department",
-            "job_title",
-            "salary",
-            "date_joined"
-        ]       
+        fields = "__all__"

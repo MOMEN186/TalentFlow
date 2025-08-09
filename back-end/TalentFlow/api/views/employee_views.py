@@ -1,13 +1,13 @@
-from ..models import Employee
+from ..models import Employee , PayRoll
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from ..serializers import EmployeeSerializer
+from django.db.models import Prefetch
 
 class EmployeeViewSet(viewsets.ModelViewSet):
 
-    queryset = Employee.objects.all().select_related(
-        "department",
-        "job_title",
+    queryset = Employee.objects.select_related("department","job_title").prefetch_related(
+        Prefetch("payrolls", queryset=PayRoll.objects.order_by("-date"))
     )
     serializer_class = EmployeeSerializer
 
