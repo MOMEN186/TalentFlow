@@ -68,8 +68,8 @@ useEffect(()=>{console.log(payroll);},[payroll])
             payroll.map((item, index) => (
             <tr key={item.id}>
               <td>{(50*(page-1)+index+1)}</td>
-              <td>{item.first_name}</td>
-              <td>{item.last_name}</td>
+              <td>{item.employee.first_name}</td>
+              <td>{item.employee.last_name}</td>
               <td>{item.compensation}</td>
               <td>{item.bonus}</td>
               <td>{item.tax}</td>
