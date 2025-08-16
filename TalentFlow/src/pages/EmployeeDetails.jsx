@@ -11,7 +11,7 @@ function EmployeeDetais() {
 
   useEffect(() => {
     (async () => {
-      const res = await api(`/employees/${id}/`);
+      const res = await api(`/api/employees/${id}/`);
       setEmployee(res.data.employee);
     })();
   }, [id]);

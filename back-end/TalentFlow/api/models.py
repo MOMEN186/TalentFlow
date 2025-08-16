@@ -2,7 +2,6 @@ from django.db import models
 from django.core.validators import RegexValidator
 
 
-
 class Employee(models.Model):
     first_name = models.CharField(max_length=255, null=False, blank=False)
     middle_name = models.CharField(max_length=255, null=False, blank=False)
@@ -47,28 +46,4 @@ class LeaveNote(models.Model):
         verbose_name = 'Leave Note'
         verbose_name_plural = 'Leave Notes'
 
-
-    
-class PayRoll(models.Model):
-    name = models.CharField(max_length=255)
-    date=models.DateField(auto_now_add=True)
-    compensation = models.DecimalField(max_digits=10, decimal_places=2)
-    net_pay=models.DecimalField(max_digits=10, decimal_places=2)
-    gross_pay=models.DecimalField(max_digits=10, decimal_places=2)
-    tax=models.DecimalField(max_digits=10, decimal_places=2)
-    bonus=models.DecimalField(max_digits=10, decimal_places=2)
-    deductions=models.DecimalField(max_digits=10, decimal_places=2)
-    employee = models.ForeignKey(Employee, on_delete=models.PROTECT, related_name='payrolls')
-
-    class Meta:
-        unique_together = ('employee', 'date')
-    def __str__(self):
-        return f"{self.name} - {self.date.strftime('%Y-%m-%d')}"
-
-    
-    def save(self, *args, **kwargs):
-        # Calculate gross and net before saving
-        self.gross_pay = self.compensation + self.bonus
-        self.net_pay = self.gross_pay - self.tax - self.deductions
-        super().save(*args, **kwargs)
 

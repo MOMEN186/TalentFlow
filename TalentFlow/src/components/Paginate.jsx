@@ -1,28 +1,31 @@
 import React, { useEffect, useState } from "react";
 import Pagination from "react-bootstrap/Pagination";
+import { useNavigate, useLocation } from "react-router-dom";
 
-function Paginate({ page, setPage, totalPages }) {
+function Paginate({ page, totalPages }) {
   const [pageNumbers, setPageNumbers] = useState([1]);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const goTo = (i) => {
     if (i >= 1 && i <= totalPages) {
-      setPage(i);
+      // strip trailing /number if it exists
+      const basePath = location.pathname.replace(/\/\d+$/, "");
+      // if already at base (like "/employees"), use it directly
+      const target = basePath === location.pathname ? `${basePath}/${i}` : `${basePath}/${i}`;
+      navigate(target);
     }
   };
 
   const pageWindowSize = 9;
 
   useEffect(() => {
-    console.log("page changed",page)
     const arr = [];
-    for (let i = page; i <= (page + pageWindowSize); i++) {
+    for (let i = page; i <= page + pageWindowSize && i <= totalPages; i++) {
       arr.push(i);
-
-      setPageNumbers(arr);
     }
-  }, [page]);
-
-useEffect(()=>{console.log("page numbers", pageNumbers);},[pageNumbers])
+    setPageNumbers(arr);
+  }, [page, totalPages]);
 
   return (
     <Pagination className="justify-content-center mt-3">
@@ -39,14 +42,8 @@ useEffect(()=>{console.log("page numbers", pageNumbers);},[pageNumbers])
         </Pagination.Item>
       ))}
 
-      <Pagination.Next
-        onClick={() => goTo(page + 1)}
-        disabled={page === totalPages}
-      />
-      <Pagination.Last
-        onClick={() => goTo(totalPages)}
-        disabled={page === totalPages}
-      />
+      <Pagination.Next onClick={() => goTo(page + 1)} disabled={page === totalPages} />
+      <Pagination.Last onClick={() => goTo(totalPages)} disabled={page === totalPages} />
     </Pagination>
   );
 }

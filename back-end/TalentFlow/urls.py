@@ -4,10 +4,12 @@ from django.conf   import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-     path('admin/', admin.site.urls),
-    path('api/', include('TalentFlow.api.urls')),
-  path('api/auth/', include('TalentFlow.accounts.urls')),
-  
- ]
+    path("admin/", admin.site.urls),
+    path("api/", include("TalentFlow.api.urls")),
+    path("api/auth/", include("TalentFlow.accounts.urls")),
+    path("hr/", include("hr.urls")),
+    path("attendance/", include("attendance.urls")),
+
+]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

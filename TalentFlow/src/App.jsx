@@ -10,6 +10,7 @@ import Login from "./pages/Login";
 import { AuthProvider } from "./providers/AuthProvider";
 import Profile from "./pages/Profile";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Attendance from "./pages/Attendance";
 
 function App() {
   return (
@@ -22,11 +23,13 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/" element={<ProtectedRoute element={<Dashboard />} />} />
               <Route path="/dashboard" element={<ProtectedRoute element={<Dashboard />} />} />
-              <Route path="/employees" element={<ProtectedRoute element={<Employees />} />} />
+              <Route path="/employees/:page?" element={<ProtectedRoute element={<Employees />} />} />
               <Route path="/employees/:id" element={<ProtectedRoute element={<EmployeeDetais />} />} />
-              <Route path="/payroll" element={<ProtectedRoute element={<PayRoll />} />} />
-              <Route path="/leave_note" element={<ProtectedRoute element={<LeaveNote />} />} />
+              <Route path="/payroll/:page?" element={<ProtectedRoute element={<PayRoll />} />} />
+              <Route path="/leave_note/:page?" element={<ProtectedRoute element={<LeaveNote />} />} />
               <Route path="/profile" element={<ProtectedRoute element={<Profile />} />} />
+              <Route path="/attendance/:page?" element={<ProtectedRoute element={<Attendance />} />} />
+
               <Route path="*" element={<ProtectedRoute element={<NotFound />} />} />
             </Routes>
           </div>

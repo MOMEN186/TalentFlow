@@ -12,7 +12,7 @@ function Login() {
   };
 
   return (
-    <Form>
+    <Form style={{padding:"20px"}}>
       <Form.Group className="mb-3" controlId="formGroupEmail">
         <Form.Label>Email address</Form.Label>
         <Form.Control

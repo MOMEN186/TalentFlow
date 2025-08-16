@@ -1,8 +1,10 @@
 
+# Create your views here.
+
 from django.http import HttpResponse
 from rest_framework import viewsets, status
-from ..models import PayRoll
-from ..serializers import PayRollSerializer
+from .models import PayRoll
+from .serializers import PayRollSerializer
 from rest_framework.decorators import action
 from rest_framework.response import Response
 import openpyxl
