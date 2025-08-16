@@ -1,7 +1,6 @@
 # apis/admin.py
 from django.contrib import admin
-from .models import Employee, Department, JobTitle, LeaveNote, PayRoll
-
+from .models import Employee, Department, JobTitle, LeaveNote
 @admin.register(Employee)
 class EmployeeAdmin(admin.ModelAdmin):
     list_display = (
@@ -26,6 +25,3 @@ class JobTitleAdmin(admin.ModelAdmin):
 class LeaveNoteAdmin(admin.ModelAdmin):
     list_display = ('name', 'employee', 'date', 'return_date')
 
-@admin.register(PayRoll)
-class PayRollAdmin(admin.ModelAdmin):
-    list_display = ('name', 'date', 'net_pay', 'gross_pay')

@@ -17,21 +17,16 @@ function SideBar() {
     >
       <Nav defaultActiveKey="/dashboard" className="flex-column">
         <Nav.Link onClick={() => navigate("/profile")}>
-           
-          <Image src="https://www.bigfootdigital.co.uk/how-to-optimise-images" roundedCircle />
+          <Image
+            src="https://www.bigfootdigital.co.uk/how-to-optimise-images"
+            roundedCircle
+          />
         </Nav.Link>
-        <Nav.Link onClick={() => navigate("/dashboard")}>
-          Dashboard
-        </Nav.Link>
-        <Nav.Link onClick={() => navigate("/employees")}>
-          Employees
-        </Nav.Link>
-        <Nav.Link onClick={() => navigate("/payroll")}>
-          Payroll
-        </Nav.Link>
-        <Nav.Link onClick={() => navigate("/leave_note")}>
-          Leave Notes
-        </Nav.Link>
+        <Nav.Link onClick={() => navigate("/dashboard")}>Dashboard</Nav.Link>
+        <Nav.Link onClick={() => navigate("/employees")}>Employees</Nav.Link>
+        <Nav.Link onClick={() => navigate("/payroll")}>Payroll</Nav.Link>
+        <Nav.Link onClick={() => navigate("/leave_note")}>Leave Notes</Nav.Link>
+        <Nav.Link onClick={() => navigate("/attendance")}>Attendance</Nav.Link>
       </Nav>
     </div>
   );
