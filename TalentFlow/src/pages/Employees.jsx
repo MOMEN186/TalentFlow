@@ -8,7 +8,7 @@ import Paginate from "../components/Paginate";
 function Employees() {
   const navigate = useNavigate();
   const api = useAxios();
-  const page = parseInt(useParams().page||1);
+  const page = parseInt(useParams().page || 1);
   const [employees, setEmployees] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
 
@@ -78,7 +78,7 @@ function Employees() {
             employees.map((emp, idx) => (
               <tr
                 key={emp.id}
-                onClick={() => navigate(`/employees/${emp.id}`)}
+                onClick={() => navigate(`/employee/${emp.id}`)}
                 style={{ cursor: "pointer" }}
               >
                 <td>{50 * (page - 1) + idx + 1}</td>

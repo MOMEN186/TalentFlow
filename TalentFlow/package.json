@@ -12,6 +12,7 @@
   "dependencies": {
     "axios": "^1.10.0",
     "bootstrap": "^5.3.7",
+    "date-fns": "^4.1.0",
     "dayjs": "^1.11.13",
     "file-saver": "^2.0.5",
     "jwt-decode": "^4.0.0",
@@ -19,6 +20,7 @@
     "react-bootstrap": "^2.10.10",
     "react-dom": "^19.1.0",
     "react-router-dom": "^7.7.0",
+    "recharts": "^3.1.2",
     "universal-cookie": "^8.0.1",
     "xlsx": "^0.18.5"
   },

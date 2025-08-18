@@ -10,7 +10,7 @@ function SideBar() {
     <div
       style={{
         width: "200px",
-        height: "100vh",
+        height: "150vh",
         padding: "1rem",
         backgroundColor: "#e9ecef",
       }}

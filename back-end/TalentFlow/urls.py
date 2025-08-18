@@ -9,6 +9,8 @@ urlpatterns = [
     path("api/auth/", include("TalentFlow.accounts.urls")),
     path("hr/", include("hr.urls")),
     path("attendance/", include("attendance.urls")),
+ path("reports/", include("reports.urls")),
+   path("__debug__/", include("debug_toolbar.urls")),
 
 ]
 if settings.DEBUG:
