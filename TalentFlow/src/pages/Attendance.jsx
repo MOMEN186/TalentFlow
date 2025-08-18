@@ -75,7 +75,7 @@ function Attendance() {
             attendance.map((emp, idx) => (
               <tr
                 key={emp.id}
-                onClick={() => navigate(`/employees/${emp.employee}`)}
+                onClick={() => navigate(`/employee/${emp.employee}`)}
                 style={{ cursor: "pointer" }}
               >
                 <td>{50 * (page - 1) + idx + 1}</td>

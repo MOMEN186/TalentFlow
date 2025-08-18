@@ -1,5 +1,8 @@
+# api/models.py
 from django.db import models
 from django.core.validators import RegexValidator
+from django.conf import settings
+from django.core.exceptions import ValidationError
 
 
 class Employee(models.Model):
@@ -19,6 +22,8 @@ class Employee(models.Model):
     date_joined=models.DateField(auto_now_add=True)
     department = models.ForeignKey('Department', on_delete=models.PROTECT,related_name='employee')
     job_title=models.ForeignKey('JobTitle',on_delete=models.PROTECT,related_name='employee')
+    termination_date = models.DateField(null=True, blank=True)
+    status = models.CharField(max_length=255, null=False, blank=False)
     def __str__(self):
         return self.first_name
     class Meta:
@@ -42,8 +47,59 @@ class LeaveNote(models.Model):
     date=models.DateField()
     return_date=models.DateField()
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE,related_name='leave_note')
+    status = models.CharField(
+        max_length=255,
+        default="Pending",
+        choices=[
+            ("Pending", "Pending"),
+            ("Approved", "Approved"),
+            ("Denied", "Denied"),
+        ],
+    )
     class Meta:
         verbose_name = 'Leave Note'
         verbose_name_plural = 'Leave Notes'
 
 
+class Exit(models.Model):
+    EXIT_TYPE_CHOICES = [
+        ("voluntary", "Voluntary"),
+        ("involuntary", "Involuntary"),
+        ("end_of_contract", "End of contract"),
+    ]
+    exit_date = models.DateField()
+    employee = models.ForeignKey(Employee, on_delete=models.PROTECT,related_name='exit')
+    reason = models.CharField(max_length=255)
+    notes = models.TextField(blank=True, null=True)
+    exit_type = models.CharField(
+        max_length=255,
+        choices=EXIT_TYPE_CHOICES
+    )
+    recorded_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="recorded_exits"
+    )
+    final_settlement_amount = models.DecimalField(
+        max_digits=12, decimal_places=2, null=True, blank=True
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name = "Exit"
+        verbose_name_plural = "Exits"
+        ordering = ["-exit_date", "-created_at"]
+
+    def __str__(self):
+        return f"{self.employee} — {self.get_exit_type_display()} ({self.exit_date})"
+
+    def clean(self):
+        # basic validation: can't exit before hire/join date
+        if self.employee and self.employee.date_joined and self.exit_date < self.employee.date_joined:
+            raise ValidationError("Exit date cannot be earlier than employee's join date.")
+
+    def save(self, *args, **kwargs):
+        self.full_clean()  # run clean() -> raises ValidationError if invalid
+        super().save(*args, **kwargs)

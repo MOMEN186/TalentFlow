@@ -15,21 +15,29 @@ import Attendance from "./pages/Attendance";
 function App() {
   return (
     <AuthProvider>
-      <div style={{ display: "flex", height: "100vh" }}>
+      <div style={{ display: "flex", minHeight: "100vh", width: "100vw" }}>
         <SideBar />
-        <div style={{ flex: 1, overflowY: "auto" }}>
+        <div style={{
+          flex: 1,
+          width: "100%",
+          height: "100%",
+          overflow: "auto",
+          minWidth: 0, // prevents shrinking
+          padding: 0,
+          margin: 0,
+          background: "#fff"
+        }}>
           <div className="my-3" style={{ width: '100%' }}>
             <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/" element={<ProtectedRoute element={<Dashboard />} />} />
               <Route path="/dashboard" element={<ProtectedRoute element={<Dashboard />} />} />
               <Route path="/employees/:page?" element={<ProtectedRoute element={<Employees />} />} />
-              <Route path="/employees/:id" element={<ProtectedRoute element={<EmployeeDetais />} />} />
+              <Route path="/employee/:id" element={<ProtectedRoute element={<EmployeeDetais />} />} />
               <Route path="/payroll/:page?" element={<ProtectedRoute element={<PayRoll />} />} />
               <Route path="/leave_note/:page?" element={<ProtectedRoute element={<LeaveNote />} />} />
               <Route path="/profile" element={<ProtectedRoute element={<Profile />} />} />
               <Route path="/attendance/:page?" element={<ProtectedRoute element={<Attendance />} />} />
-
               <Route path="*" element={<ProtectedRoute element={<NotFound />} />} />
             </Routes>
           </div>
