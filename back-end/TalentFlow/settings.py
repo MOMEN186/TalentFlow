@@ -73,8 +73,27 @@ INSTALLED_APPS = [
     "corsheaders",
         "cloudinary",
         "hr",
-        "attendance"
+        "attendance",
+        "reports", 
+        "debug_toolbar",
+        "middlewares.performance.PerformanceMiddleware",
+ 
 ]
+
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {"class": "logging.StreamHandler"},
+    },
+    "loggers": {
+        "performance": {
+            "handlers": ["console"],
+            "level": "INFO",
+        },
+    },
+}
 
 DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 
@@ -149,8 +168,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+       "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
-
+INTERNAL_IPS = ["127.0.0.1"]
 ROOT_URLCONF = 'TalentFlow.urls'
 
 TEMPLATES = [
