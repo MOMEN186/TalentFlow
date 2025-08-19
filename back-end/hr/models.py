@@ -13,6 +13,12 @@ class PayRoll(models.Model):
     tax = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
     class Meta:
+        unique_together = ('employee', 'year', 'month')   
+        indexes = [
+            models.Index(fields=['year', 'month'], name='payroll_year_month_idx'),   # queries by month/year
+            # Avoid adding duplicate (employee, year, month) since unique_together creates it.
+            models.Index(fields=['employee'], name='payroll_employee_idx'),         #
+        ]
         unique_together = ('employee', 'year', 'month')
 
     def save(self, *args, **kwargs):

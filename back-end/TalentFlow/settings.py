@@ -77,7 +77,6 @@ INSTALLED_APPS = [
         "attendance",
         "reports", 
         "debug_toolbar",
-        "middlewares.performance.PerformanceMiddleware",
  
 ]
 
@@ -170,6 +169,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
        "debug_toolbar.middleware.DebugToolbarMiddleware",
+        "middlewares.performance.PerformanceMiddleware",
 ]
 INTERNAL_IPS = ["127.0.0.1"]
 ROOT_URLCONF = 'TalentFlow.urls'
