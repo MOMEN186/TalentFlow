@@ -11,6 +11,11 @@ class Attendance(models.Model):
 
     class Meta:
         unique_together = ('employee', 'date')
+        indexes = [
+            models.Index(fields=['date'], name='attendance_date_idx'),               # speeds up ORDER BY date DESC / global recent queries
+            # Optional: if you do many queries filtering only by employee (without date), keep this:
+            models.Index(fields=['employee'], name='attendance_employee_idx'),
+        ]
 
     def late_minutes(self):
         """Calculate late arrival in minutes."""

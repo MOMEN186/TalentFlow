@@ -10,9 +10,18 @@ from rest_framework.response import Response
 import openpyxl
 
 class PayRollViewSet(viewsets.ModelViewSet):
-    queryset = PayRoll.objects.select_related("employee").all()
+    # queryset = PayRoll.objects.select_related(
+    #     "employee", "employee__department", "employee__job_title"
+    # ).all()
     serializer_class = PayRollSerializer
 
+    def get_queryset(self):
+        # join payroll -> employee -> department -> job_title in one query
+        return (
+            PayRoll.objects
+            .select_related("employee", "employee__department", "employee__job_title")
+            .all()
+        )
     @action(detail=False, methods=["get"], url_path="export")
     def payroll_export(self, request):
         # Fetch all employees with related data
