@@ -58,11 +58,11 @@ ALLOWED_HOSTS = [ "*",  "localhost",
 DB_FILES_AUTO_EXPORT_DB_TO_FS = False  # Set to
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
+    # 'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
+    # 'django.contrib.sessions',
+    # 'django.contrib.messages',
     'django.contrib.staticfiles',
     'TalentFlow.api',
     'TalentFlow.accounts',   
@@ -84,13 +84,22 @@ INSTALLED_APPS = [
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "%(asctime)s %(levelname)s %(name)s: %(message)s"
+        },
+    },
     "handlers": {
-        "console": {"class": "logging.StreamHandler"},
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        },
     },
     "loggers": {
-        "performance": {
+        "hr.views": {  # <-- your module
             "handlers": ["console"],
-            "level": "INFO",
+            "level": "INFO",  # or DEBUG
+            "propagate": False,
         },
     },
 }
@@ -162,13 +171,12 @@ SIMPLE_JWT = {
 MIDDLEWARE = [
      "corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
+    # 'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
+     'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.contrib.auth.middleware.AuthenticationMiddleware',
+    # 'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-       "debug_toolbar.middleware.DebugToolbarMiddleware",
         "middlewares.performance.PerformanceMiddleware",
 ]
 INTERNAL_IPS = ["127.0.0.1"]

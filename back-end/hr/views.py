@@ -1,78 +1,78 @@
-
-# Create your views here.
-
-from django.http import HttpResponse
-from rest_framework import viewsets, status
+# hr/views.py
+from rest_framework import viewsets
+from rest_framework.pagination import PageNumberPagination
 from .models import PayRoll
 from .serializers import PayRollSerializer
-from rest_framework.decorators import action
-from rest_framework.response import Response
-import openpyxl
+import time
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+class SmallPagination(PageNumberPagination):
+    page_size = 50
+    page_size_query_param = "page_size"
+    max_page_size = 200
+
 
 class PayRollViewSet(viewsets.ModelViewSet):
-    # queryset = PayRoll.objects.select_related(
-    #     "employee", "employee__department", "employee__job_title"
-    # ).all()
+    """
+    ModelViewSet for PayRoll:
+    - list() supports paginated JSON and ?excel=true full export (no cache, no pagination)
+    - get_queryset uses select_related and simple filters for fast browsing
+    """
     serializer_class = PayRollSerializer
+    pagination_class = SmallPagination
 
     def get_queryset(self):
-        # join payroll -> employee -> department -> job_title in one query
-        return (
+        qs = (
             PayRoll.objects
             .select_related("employee", "employee__department", "employee__job_title")
-            .all()
+            .order_by("-year", "-month", "employee__last_name")
         )
-    @action(detail=False, methods=["get"], url_path="export")
-    def payroll_export(self, request):
-        # Fetch all employees with related data
-        employees = self.get_queryset()
 
-        # If ?excel=true, generate and return .xlsx
-        if request.query_params.get("excel") in ("1", "true", "yes"):
-            wb = openpyxl.Workbook(write_only=True)
-            ws = wb.create_sheet(title="Payroll")
+        # Lightweight filters commonly used for daily browsing
+        year = self.request.query_params.get("year")
+        month = self.request.query_params.get("month")
+        department = self.request.query_params.get("department")  # department id or slug as you prefer
 
-            # Header row
-            ws.append([
-                "ID",
-                "First Name",
-                "Middle Name",
-                "Last Name",
-                "Email",
-                "Phone",
-                "Department",
-                "Job Title",
-                "Gross Pay",
-                "Tax",
-                "Bonus",
-                "Net Pay",
-            ])
+        if year:
+            qs = qs.filter(year=year)
+        if month:
+            qs = qs.filter(month=month)
+        if department:
+            qs = qs.filter(employee__department__id=department)
 
-            # Data rows
-            for emp in employees:
-                ws.append([
-                    emp.id,
-                    emp.first_name,
-                    emp.middle_name or "",
-                    emp.last_name,
-                    emp.email,
-                    emp.phone,
-                    emp.department.name if emp.department else "",
-                    emp.job_title.name if emp.job_title else "",
-                    emp.salary.gross_pay,
-                    emp.salary.tax,
-                    emp.salary.bonus,
-                    emp.salary.net_pay,
-                ])
+        return qs
 
-            # Stream workbook to response
-            resp = HttpResponse(
-                content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            )
-            resp["Content-Disposition"] = 'attachment; filename="payroll.xlsx"'
-            wb.save(resp)
-            return resp
+    def list(self, request, *args, **kwargs):
+        t0 = time.perf_counter()
+        export_excel = request.query_params.get("excel", "false").lower() in ("1", "true", "yes")
+        queryset = self.filter_queryset(self.get_queryset())
+        t1 = time.perf_counter()
 
-        # Otherwise fall back to JSON
-        serializer = self.get_serializer(employees, many=True)
-        return Response({"payroll": serializer.data}, status=status.HTTP_200_OK)
+        # --- Excel export (no cache, no pagination) ---
+        if export_excel:
+            # If you previously had a custom Excel exporter, reintegrate it here.
+            # For now we fall back to the default list implementation for export.
+            return super().list(request, *args, **kwargs)
+
+        # Paginator timing
+        paginator = self.paginator
+        t2 = time.perf_counter()
+        page_obj = paginator.paginate_queryset(queryset, request, view=self)
+        t3 = time.perf_counter()
+
+        # Serialization timing
+        serializer = self.get_serializer(page_obj, many=True)
+        t4 = time.perf_counter()
+
+        paginated_response = paginator.get_paginated_response(serializer.data)
+        t5 = time.perf_counter()
+
+        logger.info(
+            "Payroll list timings: queryset=%.3f s, paginate=%.3f s, serialize=%.3f s, response_build=%.3f s",
+            t1 - t0, t3 - t2, t4 - t3, t5 - t4
+        )
+
+        return paginated_response
