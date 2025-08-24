@@ -173,7 +173,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     # 'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-     'django.middleware.csrf.CsrfViewMiddleware',
+    #  'django.middleware.csrf.CsrfViewMiddleware',
     # 'django.contrib.auth.middleware.AuthenticationMiddleware',
     # 'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -214,10 +214,12 @@ WSGI_APPLICATION = 'TalentFlow.wsgi.application'
 
 DATABASES = {
     'default': dj_database_url.parse(
-       config("NEON_CONNECTION_STRING")
+       config("NEON_CONNECTION_STRING"),
+       
     )
 }
 
+SESSION_ENGINE = None  # Disable sessions entirely if not needed
 
 
 

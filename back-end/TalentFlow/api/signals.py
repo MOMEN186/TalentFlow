@@ -1,7 +1,8 @@
 # api/signals.py
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from .models import Exit
+from .models import Exit,Employee
+from TalentFlow.accounts.models import CustomUser
 
 @receiver(post_save, sender=Exit)
 def apply_exit_to_employee(sender, instance: Exit, created, **kwargs):
@@ -13,3 +14,9 @@ def apply_exit_to_employee(sender, instance: Exit, created, **kwargs):
         # set status (use whatever convention you have)
         emp.status = "inactive"
         emp.save(update_fields=["termination_date", "status"])
+
+
+@receiver(post_save, sender=CustomUser)
+def create_employee_for_user(sender, instance, created, **kwargs):
+    if created and not hasattr(instance, "employee"):
+        Employee.objects.create(user=instance)

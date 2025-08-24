@@ -1,17 +1,21 @@
 # accounts/serializers.py
 from rest_framework import serializers
 from .models import CustomUser
+from TalentFlow.api.serializers import EmployeeSerializer
 
 class UserSerializer(serializers.ModelSerializer):
     # Expose just the Cloudinary URL on read
     profile_photo = serializers.SerializerMethodField()
-
+    
+    # Include employee data
+    employee_data = serializers.SerializerMethodField()
+     
     # Accept an 'image' upload mapped into the CloudinaryField
     image = serializers.ImageField(source="profile_photo", write_only=True, required=False)
 
     class Meta:
-        model  = CustomUser
-        fields = ("id", "email", "full_name", "image", "profile_photo", "password")
+        model = CustomUser
+        fields = ("id", "email", "full_name", "image", "profile_photo", "password", "employee_data")
         extra_kwargs = {
             "password": {"write_only": True, "min_length": 8},
         }
@@ -19,6 +23,14 @@ class UserSerializer(serializers.ModelSerializer):
     def get_profile_photo(self, obj):
         # obj.profile_photo.url gives the full Cloudinary URL
         return obj.profile_photo.url if obj.profile_photo else None
+    
+    def get_employee_data(self, obj):
+        """Get employee data if it exists"""
+        try:
+            employee = obj.employee_profile
+            return EmployeeSerializer(employee).data
+        except:
+            return None
 
     def create(self, validated_data):
         photo = validated_data.pop("profile_photo", None)

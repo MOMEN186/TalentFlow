@@ -1,9 +1,13 @@
 # accounts/views.py
-import os
-from rest_framework.decorators import api_view, permission_classes, parser_classes
+import logging
+
+from django.conf import settings
+from rest_framework import status, viewsets
+from rest_framework.decorators import api_view, action
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
-from rest_framework import status
+
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
@@ -11,15 +15,18 @@ from rest_framework_simplejwt.serializers import (
     TokenObtainPairSerializer,
     TokenRefreshSerializer,
 )
-from django.conf import settings
-from rest_framework.parsers import MultiPartParser, FormParser
-from decouple import config
+
+from .serializers import UserSerializer
+from .models import CustomUser  # <<-- fixed import (space after from)
+
+logger = logging.getLogger(__name__)
+
 
 class MyTokenObtainPairView(TokenObtainPairView):
-    serializer_class = TokenObtainPairSerializer  # Fixed typo: serialzer -> serializer
+    serializer_class = TokenObtainPairSerializer
 
-    def post(self, req, *args, **kwargs):
-        response = super().post(req, *args, **kwargs)
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
         refresh = response.data.pop("refresh", None)
 
         if refresh:
@@ -27,9 +34,9 @@ class MyTokenObtainPairView(TokenObtainPairView):
                 "refresh_token",
                 refresh,
                 httponly=True,
-                samesite="None" if not settings.DEBUG else "Lax",  # Consistent samesite
-                secure=not settings.DEBUG,  # Consistent secure setting
-                max_age=60 * 60 * 24 * 7,  # 7 days
+                samesite="None" if not settings.DEBUG else "Lax",
+                secure=not settings.DEBUG,
+                max_age=60 * 60 * 24 * 7,
             )
         return response
 
@@ -37,113 +44,93 @@ class MyTokenObtainPairView(TokenObtainPairView):
 class MyTokenRefreshView(TokenRefreshView):
     serializer_class = TokenRefreshSerializer
 
-    def post(self, req, *args, **kwargs):
-        print("---------------------", req.data, "-----------------")
-        
-        # If no refresh token in body, try to get from cookie
-        if not req.data.get("refresh"):
-            cookie_token = req.COOKIES.get("refresh_token")
+    def post(self, request, *args, **kwargs):
+        # if there's no refresh in body, try cookie and inject it into a copy of the data
+        data = request.data.copy() if hasattr(request.data, "copy") else dict(request.data)
+        if not data.get("refresh"):
+            cookie_token = request.COOKIES.get("refresh_token")
             if cookie_token:
-                # Make request data mutable if it's not already
-                if hasattr(req.data, "_mutable"):
-                    req.data._mutable = True
-                    req.data["refresh"] = cookie_token
+                data["refresh"] = cookie_token
 
-        res = super().post(req, *args, **kwargs)
-        
-        # Get the new refresh token from response
-        new_refresh = res.data.get("refresh")
+        # call serializer manually to avoid mutating request.data in unexpected ways
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        res_data = serializer.validated_data
+        # Use the view's response machinery to generate tokens (TokenRefreshView normally returns)
+        response = Response(res_data)
 
+        new_refresh = res_data.get("refresh")
         if new_refresh:
-            # Set the new refresh token in cookie
-            res.set_cookie(
+            response.set_cookie(
                 "refresh_token",
-                new_refresh,  # Fixed: was missing the actual token value
-                httponly=True,  # Fixed typo: httpOnly -> httponly
+                new_refresh,
+                httponly=True,
                 secure=not settings.DEBUG,
                 samesite="None" if not settings.DEBUG else "Lax",
-                max_age=60 * 60 * 24 * 7,  # 7 days
+                max_age=60 * 60 * 24 * 7,
             )
-            # Remove refresh token from response body
-            res.data.pop("refresh", None)
-        
-        return res
+            response.data.pop("refresh", None)
+        return response
 
 
 @api_view(["POST"])
 def logout_view(request):
     try:
-        # Try to get refresh token from request data first
-        refresh_token = request.data.get("refresh")
-        
-        # If not in data, try to get from cookie
+        refresh_token = request.data.get("refresh") or request.COOKIES.get("refresh_token")
         if not refresh_token:
-            refresh_token = request.COOKIES.get("refresh_token")
-            
-        if not refresh_token:
-            return Response(
-                {"detail": "No refresh token provided"}, 
-                status=status.HTTP_400_BAD_REQUEST
-            )
-            
+            return Response({"detail": "No refresh token provided"}, status=status.HTTP_400_BAD_REQUEST)
+
         token = RefreshToken(refresh_token)
         token.blacklist()
-        
-        # Create response and clear the cookie
+
         response = Response({"detail": "Logout successful"})
-        response.delete_cookie(
-            "refresh_token",
-            samesite="None" if not settings.DEBUG else "Lax",
-            secure=not settings.DEBUG
-        )
+        response.delete_cookie("refresh_token", samesite="None" if not settings.DEBUG else "Lax", secure=not settings.DEBUG)
         return response
-        
     except TokenError:
-        # Still clear the cookie even if token is invalid
-        response = Response(
-            {"detail": "Invalid or expired token"}, 
-            status=status.HTTP_400_BAD_REQUEST
-        )
-        response.delete_cookie(
-            "refresh_token",
-            samesite="None" if not settings.DEBUG else "Lax",
-            secure=not settings.DEBUG
-        )
+        response = Response({"detail": "Invalid or expired token"}, status=status.HTTP_400_BAD_REQUEST)
+        response.delete_cookie("refresh_token", samesite="None" if not settings.DEBUG else "Lax", secure=not settings.DEBUG)
         return response
 
 
-@api_view(["POST"])
-@permission_classes([IsAuthenticated])
-@parser_classes([MultiPartParser, FormParser])
-def upload_photo(req):
-    try:
-        print(config("CLOUD_NAME"))
-        print(f"User: {req.user}")
-        print(f"Content-Type: {req.content_type}")
-        print(f"Request FILES: {req.FILES}")
-        print(f"Request DATA: {req.data}")
-        
-        user = req.user
-        
-        # Check if image file is provided
-        if 'image' not in req.FILES:
-            return Response(
-                {"error": "No image file provided"}, 
-                status=status.HTTP_400_BAD_REQUEST
-            )
-            
-        user.profile_photo = req.FILES["image"]
-        user.save()
-        
-        photo_url = req.build_absolute_uri(user.profile_photo.url)
-        return Response({
-            "message": "Photo uploaded successfully.", 
-            "photo_url": photo_url
-        })
-        
-    except Exception as e:
-        print(f"Upload error: {e}")
-        return Response(
-            {"error": str(e)}, 
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR
-        )
+class ProfileViewSet(viewsets.ModelViewSet):
+    serializer_class = UserSerializer
+    queryset = CustomUser.objects.all()
+    permission_classes = [IsAuthenticated]
+
+    @action(detail=False, methods=["get"], url_path="me")
+    def me(self, request):
+        serializer = self.get_serializer(request.user)
+        return Response(serializer.data)
+
+    @action(
+        detail=False,
+        methods=["post"],
+        url_path="upload_photo",
+        permission_classes=[IsAuthenticated],
+        parser_classes=[MultiPartParser, FormParser],
+    )
+    def upload_photo(self, request):
+        try:
+            user = request.user
+
+            # Ensure the user model actually has the field
+            if not hasattr(user, "profile_photo"):
+                logger.error("User model has no 'profile_photo' attribute")
+                return Response({"error": "User does not support profile photos"}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Accept either 'image' or 'profile_photo' as the form key
+            file_obj = request.FILES.get("image") or request.FILES.get("profile_photo")
+            if not file_obj:
+                return Response({"error": "No image file provided"}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Save file and user
+            user.profile_photo = file_obj
+            user.save(update_fields=["profile_photo"])
+
+            # build absolute url (ensure MEDIA_URL is configured)
+            photo_url = request.build_absolute_uri(user.profile_photo.url)
+            return Response({"message": "Photo uploaded successfully.", "photo_url": photo_url}, status=status.HTTP_201_CREATED)
+
+        except Exception as exc:
+            logger.exception("Error while uploading profile photo: %s", exc)
+            return Response({"error": "Failed to upload photo", "details": str(exc)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

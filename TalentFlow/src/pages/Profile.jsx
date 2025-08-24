@@ -1,18 +1,19 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { AuthContext } from "../contexts/AuthContext";
 import useAxios from "../utils/useAxios";
 import { cookies } from "../utils/cookies";
+import { Table } from "react-bootstrap";
 
 function Profile() {
   
-  const { image,setImage } = useContext(AuthContext);
+  const { image,setImage,user } = useContext(AuthContext);
   const api = useAxios();
 
 
   async function uploadFile(formData) {
      try {
       const response = await api.post(
-        "auth/profile_photo/",
+        "api/auth/profile/upload_photo/",
         formData,
         {
           withCredentials: true,
@@ -29,7 +30,6 @@ function Profile() {
   const handleImageChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
     setImage(file);
 
     const reader = new FileReader();
@@ -45,6 +45,32 @@ function Profile() {
 
   };
 
+  useEffect(() => {
+   const getProfile = async () => {
+    try {
+      const response = await api.get("api/auth/profile/me/");
+      console.log(response.data);
+    } catch (err) {
+      console.error("Failed to fetch profile:", err);
+    }
+    };
+    getProfile();
+   }, []);
+
+
+  useEffect(() => {
+    const getEmployeeData = async () => {
+      try {
+        console.log(user)
+      const response = await api.get("api/employees/me");
+      console.log(response.data);
+    } catch (err) {
+      console.error("Failed to fetch profile:", err);
+    }
+    }
+    getEmployeeData();
+   }, []);
+  
   return (
     <div
       style={{ position: "relative", width: 200, height: 200, margin: "auto" }}
@@ -90,8 +116,7 @@ function Profile() {
           style={{ display: "none" }}
         />
       </label>
-
-      {/* Hover effect using inline style or CSS */}
+     
       <style>
         {`
           .hover-overlay:hover {

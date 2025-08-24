@@ -1,15 +1,14 @@
 # accounts/urls.py
-from django.urls import path
-from .views import logout_view, upload_photo  
-from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
-    TokenRefreshView,
-)
+from django.urls import path, include
+from .views import logout_view, ProfileViewSet, MyTokenObtainPairView, MyTokenRefreshView
+from rest_framework.routers import DefaultRouter
+
+router = DefaultRouter()
+router.register(r'profile', ProfileViewSet, basename='profile')
 
 urlpatterns = [
-    path('login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path("logout/", logout_view, name="logout")  ,
-    path("profile_photo/",upload_photo,name="upload_photo")
+    path("login/", MyTokenObtainPairView.as_view(), name="token_obtain_pair"),
+    path("refresh/", MyTokenRefreshView.as_view(), name="token_refresh"),
+    path("logout/", logout_view, name="logout"),
+    path("", include(router.urls)),  # This includes the router URLs
 ]
- 
