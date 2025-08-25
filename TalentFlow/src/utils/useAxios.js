@@ -13,6 +13,7 @@ const useAxios = () => {
     headers: {
       Authorization: `Bearer ${authTokens.access}`,
     },
+    withCredentials: true,
   });
 
   async function TokenInterceptor(req) {

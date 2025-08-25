@@ -1,11 +1,13 @@
 import { Route, Routes } from "react-router-dom";
 import SideBar from "./components/SideBar";
+import AddExit from "./pages/AddExit";
+import AddEmployee from "./pages/AddEmployee";
+import EmployeeDetais from "./pages/EmployeeDetails";
 import Employees from "./pages/Employees";
 import Dashboard from "./pages/Dashboard";
 import PayRoll from "./pages/Payroll";
 import NotFound from "./pages/NotFound";
 import LeaveNote from "./pages/LeaveNote";
-import EmployeeDetais from "./pages/EmployeeDetails";
 import Login from "./pages/Login";
 import { AuthProvider } from "./providers/AuthProvider";
 import Profile from "./pages/Profile";
@@ -32,8 +34,11 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/" element={<ProtectedRoute element={<Dashboard />} />} />
               <Route path="/dashboard" element={<ProtectedRoute element={<Dashboard />} />} />
+              <Route path="/exit/add/:employeeId" element={<AddExit />} />
+              <Route path="/employees/:id" element={<ProtectedRoute element={<EmployeeDetais />} />} />
+              <Route path="/employees/add" element={<AddEmployee />} />
+              <Route path="/employees/edit/:id" element={<AddEmployee />} />
               <Route path="/employees/:page?" element={<ProtectedRoute element={<Employees />} />} />
-              <Route path="/employee/:id" element={<ProtectedRoute element={<EmployeeDetais />} />} />
               <Route path="/payroll/:page?" element={<ProtectedRoute element={<PayRoll />} />} />
               <Route path="/leave_note/:page?" element={<ProtectedRoute element={<LeaveNote />} />} />
               <Route path="/profile" element={<ProtectedRoute element={<Profile />} />} />

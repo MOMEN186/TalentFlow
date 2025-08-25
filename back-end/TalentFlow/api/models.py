@@ -3,6 +3,7 @@ from django.db import models
 from django.core.validators import RegexValidator
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from TalentFlow.accounts.models import CustomUser
 
 
 class Employee(models.Model):
@@ -16,14 +17,21 @@ class Employee(models.Model):
         blank=False,
     )
     
-    email = models.EmailField(max_length=255)
+    
     phone= models.CharField(max_length=20,validators=[RegexValidator(r'^\+?\d{7,15}$', message="Enter a valid phone number.")])
     address = models.CharField(max_length=255)
     date_joined=models.DateField(auto_now_add=True)
     department = models.ForeignKey('Department', on_delete=models.PROTECT,related_name='employee')
     job_title=models.ForeignKey('JobTitle',on_delete=models.PROTECT,related_name='employee')
     termination_date = models.DateField(null=True, blank=True)
-    status = models.CharField(max_length=255, null=False, blank=False)
+    STATUS_CHOICES = (
+        ('active', 'Active'),
+        ('binding', 'Binding'),
+        ('notice', 'On Notice Period'),
+        ('inactive', 'Inactive'),
+    )
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='binding')
+    user = models.OneToOneField(CustomUser, on_delete=models.SET_NULL, null=True, blank=True, related_name='employee')
     def __str__(self):
         return self.first_name
     class Meta:
