@@ -1,11 +1,11 @@
 #api/urls.py
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import EmployeeViewSet, DepartmentViewSet, JobTitleViewSet, ExitViewSet
+from .views import EmployeeViewSet, DepartmentViewSet, JobTitleViewSet, ExitViewSet, LeaveNoteViewSet
 
 router = DefaultRouter()
 router.register(r'employees', EmployeeViewSet, basename='employees')
-# router.register(r"leave_notes", LeaveNoteViewSet, basename="leave_notes")
+router.register(r"leave_notes", LeaveNoteViewSet, basename="leave_notes")
 router.register(r"exits", ExitViewSet, basename="exit")
 router.register(r'departments', DepartmentViewSet, basename='departments') 
 router.register(r'job-titles', JobTitleViewSet, basename='job-titles') 
