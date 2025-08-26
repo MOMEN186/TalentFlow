@@ -17,10 +17,6 @@ from datetime import timedelta
 import dj_database_url
 import cloudinary 
 import os
-import cloudinary.uploader
-import cloudinary.api
-
-
 
 cloudinary.config(
     cloud_name=config("CLOUD_NAME"), 
@@ -221,7 +217,7 @@ DATABASES = {
     )
 }
 
-SESSION_ENGINE = None  # Disable sessions entirely if not needed
+# SESSION_ENGINE = None  # Disable sessions entirely if not needed
 
 
 

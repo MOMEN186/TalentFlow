@@ -32,7 +32,7 @@ class Employee(models.Model):
     termination_date = models.DateField(null=True, blank=True)
     STATUS_CHOICES = (
         ('active', 'Active'),
-        ('binding', 'Binding'),
+        ('pending', 'pending'),
         ('notice', 'On Notice Period'),
         ('inactive', 'Inactive'),
     )

@@ -21,6 +21,7 @@ function Employees() {
     setEmployees([]);
     let url = `http://127.0.0.1:8000/api/employees/?page=${page}&status=${currentStatus}`;
     const response = await api.get(url);
+    console.log(response.data)
     setEmployees(response.data.results);
     setTotalPages(Math.ceil(response.data.count / 50));
   };
@@ -97,7 +98,7 @@ function Employees() {
         className="mb-3"
       >
         <Tab eventKey="active" title="Active" />
-        <Tab eventKey="binding" title="Binding" />
+        <Tab eventKey="pending" title="Pending" />
         <Tab eventKey="notice" title="On Notice" />
         <Tab eventKey="inactive" title="Inactive (Archived)" />
       </Tabs>
