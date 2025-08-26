@@ -7,6 +7,12 @@ from TalentFlow.accounts.models import CustomUser
 
 
 class Employee(models.Model):
+    user=models.OneToOneField(
+      CustomUser, 
+        on_delete=models.CASCADE, 
+        related_name='employee_profile',
+        null=True,
+        blank=True)
     first_name = models.CharField(max_length=255, null=False, blank=False)
     middle_name = models.CharField(max_length=255, null=False, blank=False)
     last_name = models.CharField(max_length=255, null=False, blank=False)

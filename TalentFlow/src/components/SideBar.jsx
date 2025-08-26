@@ -2,9 +2,13 @@
 import { useNavigate } from "react-router-dom";
 import Nav from "react-bootstrap/Nav";
 import { Image } from "react-bootstrap";
+import { AuthContext } from "../contexts/AuthContext";
+import { useContext } from "react";
 
 function SideBar() {
   const navigate = useNavigate();
+  const { image } = useContext(AuthContext) ;
+  
 
   return (
     <div
@@ -18,8 +22,10 @@ function SideBar() {
       <Nav defaultActiveKey="/dashboard" className="flex-column">
         <Nav.Link onClick={() => navigate("/profile")}>
           <Image
-            src="https://www.bigfootdigital.co.uk/how-to-optimise-images"
+            src={image||"https://shorthand.com/the-craft/raster-images/assets/5kVrMqC0wp/sh-unsplash_5qt09yibrok-4096x2731.jpeg"}
             roundedCircle
+            width={80}
+            height={80}
           />
         </Nav.Link>
         <Nav.Link onClick={() => navigate("/dashboard")}>Dashboard</Nav.Link>

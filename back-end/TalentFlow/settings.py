@@ -216,10 +216,12 @@ WSGI_APPLICATION = 'TalentFlow.wsgi.application'
 
 DATABASES = {
     'default': dj_database_url.parse(
-       config("NEON_CONNECTION_STRING")
+       config("NEON_CONNECTION_STRING"),
+       
     )
 }
 
+SESSION_ENGINE = None  # Disable sessions entirely if not needed
 
 
 
