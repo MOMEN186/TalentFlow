@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Table from "react-bootstrap/Table";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import useAxios from "../utils/useAxios";
 import { handleDownload } from "../utils/file_download";
 import Paginate from "../components/Paginate";
@@ -9,7 +9,7 @@ function Attendance() {
   const navigate = useNavigate();
   const api = useAxios();
   const [attendance, setAttendance] = useState([]);
-  const page = parseInt(useParams().page||1);
+  const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
@@ -93,7 +93,7 @@ function Attendance() {
             ))}
         </tbody>
       </Table>
-      <Paginate page={page} totalPages={totalPages} />
+      <Paginate totalPages={totalPages} page={page} setPage={setPage} />
     </div>
   );
 }

@@ -1,19 +1,15 @@
+// في ملف Paginate.jsx
 import React, { useEffect, useState } from "react";
 import Pagination from "react-bootstrap/Pagination";
-import { useNavigate, useLocation } from "react-router-dom";
 
-function Paginate({ page, totalPages }) {
+// ✅ استقبل setPage كخاصية
+function Paginate({ page, totalPages, setPage }) {
   const [pageNumbers, setPageNumbers] = useState([1]);
-  const navigate = useNavigate();
-  const location = useLocation();
 
   const goTo = (i) => {
     if (i >= 1 && i <= totalPages) {
-      // strip trailing /number if it exists
-      const basePath = location.pathname.replace(/\/\d+$/, "");
-      // if already at base (like "/employees"), use it directly
-      const target = basePath === location.pathname ? `${basePath}/${i}` : `${basePath}/${i}`;
-      navigate(target);
+      // ✅ استدعي setPage مباشرة لتغيير الحالة
+      setPage(i);
     }
   };
 

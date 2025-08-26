@@ -3,11 +3,11 @@ import useAxios from "../utils/useAxios";
 import Table from "react-bootstrap/Table";
 import { handleDownload } from '../utils/file_download';
 import Paginate from '../components/Paginate';
-import { useParams } from 'react-router-dom';
+// import { useParams } from 'react-router-dom';
 function LeaveNote() {
   const [leaveNotes, setLeaveNotes] = useState([]);
   const api = useAxios();
- const page = parseInt(useParams().page||1);
+  const [page, setPage] = useState(1);
 
   const [totalPages, setTotalPages] = useState(1);
 
@@ -15,7 +15,7 @@ function LeaveNote() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await api.get("/api/leave_notes/");
+        const res = await api(`api/leave_notes/?page=${page}`);
         console.log(res.data);
         setLeaveNotes(res.data.results);
       setTotalPages(Math.ceil(res.data.count / 50));
@@ -23,7 +23,7 @@ function LeaveNote() {
         console.error("Failed to load leave notes:", err);
       }
     })();
-  }, []);
+  }, [page]);
 
   return (
     <div
@@ -88,7 +88,7 @@ function LeaveNote() {
           )}
         </tbody>
       </Table>
-      <Paginate totalPages={totalPages} page={page} url="leave_note" />
+      <Paginate totalPages={totalPages} page={page} setPage={setPage} />
     </div>
   );
 }

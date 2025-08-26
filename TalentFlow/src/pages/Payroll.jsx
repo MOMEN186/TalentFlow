@@ -3,14 +3,16 @@ import useAxios from "../utils/useAxios";
 import Table from "react-bootstrap/Table";
 import { handleDownload } from "../utils/file_download";
 import Paginate from "../components/Paginate";
-import { useParams } from "react-router-dom";
+// import { useParams } from "react-router-dom";
+
 function Payroll() {
   const [payroll, setPayroll] = useState([]);
-    const page = parseInt(useParams().page||1);
+  // const page = parseInt(useParams().page||1);
 
   const [totalPages, setTotalPages] = useState(1);
 
   const api = useAxios();
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     const get = async () => {
@@ -87,7 +89,7 @@ useEffect(()=>{console.log(payroll);},[payroll])
             ))}
         </tbody>
       </Table>
-      <Paginate totalPages={totalPages} page={page} url="payroll" />
+      <Paginate totalPages={totalPages} page={page} setPage={setPage} />
     </div>
   );
 }
