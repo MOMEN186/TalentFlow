@@ -11,8 +11,9 @@ urlpatterns = [
     path("hr/", include("hr.urls")),
     path("attendance/", include("attendance.urls")),
     path("reports/", include("reports.urls")),
-    path('admin/', admin.site.urls),
+    path("admin/", admin.site.urls),
     path("__debug__/", include("debug_toolbar.urls")),
+    path("silk/", include("silk.urls", namespace="silk")),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

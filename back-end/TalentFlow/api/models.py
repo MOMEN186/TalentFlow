@@ -6,10 +6,33 @@ from django.core.exceptions import ValidationError
 from TalentFlow.accounts.models import CustomUser
 
 
+class Gender(models.TextChoices):
+    MALE = "Male", "Male"
+    FEMALE = "Female", "Female"
+
+
+class EmployeeStatus(models.TextChoices):
+    ACTIVE = "active", "Active"
+    PENDING = "pending", "Pending"
+    NOTICE = "notice", "On Notice Period"
+    INACTIVE = "inactive", "Inactive"
+
+
+class ExitChoices(models.TextChoices):
+    VOLUNTARY="voluntary", "Voluntary"
+    INVOLUNTARY="involuntary", "Involuntary"
+    END_OF_CONTRACT="end of contract", "End Of Contract"
+
+
+class LeaveNoteStatus(models.TextChoices):
+    PENDING="pending","Pending"
+    APPROVED="approved","Approved"
+    DENIED="denied","Denied"    
+
 class Employee(models.Model):
     user=models.OneToOneField(
       CustomUser, 
-        on_delete=models.CASCADE, 
+        on_delete=models.SET_NULL, 
         related_name='employee_profile',
         null=True,
         blank=True)
@@ -18,7 +41,7 @@ class Employee(models.Model):
     last_name = models.CharField(max_length=255, null=False, blank=False)
     gender = models.CharField(
         max_length=10,
-        choices=[("Male", "Male"), ("Female", "Female")],
+        choices=Gender.choices,
         null=False,
         blank=False,
     )
@@ -30,19 +53,21 @@ class Employee(models.Model):
     department = models.ForeignKey('Department', on_delete=models.PROTECT,related_name='employee')
     job_title=models.ForeignKey('JobTitle',on_delete=models.PROTECT,related_name='employee')
     termination_date = models.DateField(null=True, blank=True)
-    STATUS_CHOICES = (
-        ('active', 'Active'),
-        ('pending', 'pending'),
-        ('notice', 'On Notice Period'),
-        ('inactive', 'Inactive'),
+   
+    status = models.CharField(
+        max_length=20, choices=EmployeeStatus.choices, default=EmployeeStatus.PENDING
     )
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='binding')
-    user = models.OneToOneField(CustomUser, on_delete=models.SET_NULL, null=True, blank=True, related_name='employee')
     def __str__(self):
         return self.first_name
     class Meta:
         db_table = 'employee'
-
+        indexes = [
+            models.Index(fields=["date_joined"], name="emp_date_joined_idx"),
+            models.Index(fields=["status"], name="emp_status_idx"),
+            models.Index(fields=['department', 'status'], name='emp_dept_status_idx'),
+            models.Index(fields=['job_title', 'status'], name='emp_job_status_idx'),
+        ]
+        
 class Department(models.Model):
     name=models.CharField(max_length=255)
     def __str__(self):
@@ -63,12 +88,9 @@ class LeaveNote(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE,related_name='leave_note')
     status = models.CharField(
         max_length=255,
-        default="Pending",
-        choices=[
-            ("Pending", "Pending"),
-            ("Approved", "Approved"),
-            ("Denied", "Denied"),
-        ],
+        default=LeaveNoteStatus.PENDING,
+        choices=LeaveNoteStatus.choices,
+        blank=False,
     )
     class Meta:
         verbose_name = 'Leave Note'
@@ -76,22 +98,20 @@ class LeaveNote(models.Model):
 
 
 class Exit(models.Model):
-    EXIT_TYPE_CHOICES = [
-        ("voluntary", "Voluntary"),
-        ("involuntary", "Involuntary"),
-        ("end_of_contract", "End of contract"),
-    ]
+  
     exit_date = models.DateField()
     employee = models.ForeignKey(Employee, on_delete=models.PROTECT,related_name='exit')
     reason = models.CharField(max_length=255)
     notes = models.TextField(blank=True, null=True)
     exit_type = models.CharField(
         max_length=255,
-        choices=EXIT_TYPE_CHOICES
+        choices=ExitChoices.choices,
+        default=ExitChoices.VOLUNTARY,
+        blank=False,
     )
     recorded_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        on_delete=models.PROTECT,
+        on_delete=models.SET_NULL,
         null=True,
         blank=True,
         related_name="recorded_exits"

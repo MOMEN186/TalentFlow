@@ -74,6 +74,7 @@ INSTALLED_APPS = [
         "attendance",
         "reports", 
         "debug_toolbar",
+        "silk"
  
 ]
 
@@ -98,6 +99,17 @@ LOGGING = {
             "level": "INFO",  # or DEBUG
             "propagate": False,
         },
+        "TalentFlow.api.views":{
+            "handlers": ["console"],
+            "level": "INFO",  # or DEBUG
+            "propagate": False, 
+        },
+        "attendance.views":{
+             "handlers": ["console"],
+            "level": "INFO",  # or DEBUG
+            "propagate": False, 
+        }
+        
     },
 }
 
@@ -176,6 +188,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
         "middlewares.performance.PerformanceMiddleware",
+        "silk.middleware.SilkyMiddleware",
 ]
 INTERNAL_IPS = ["127.0.0.1"]
 ROOT_URLCONF = 'TalentFlow.urls'
