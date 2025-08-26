@@ -1,10 +1,12 @@
 # api/viewsets.py
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from ..models import Exit
 from ..serializers import ExitSerializer
 from TalentFlow.accounts.permissions import IsHRUser  # make sure this path matches your project
+
 
 class ExitViewSet(viewsets.ModelViewSet):
     """
@@ -15,6 +17,7 @@ class ExitViewSet(viewsets.ModelViewSet):
     """
     queryset = Exit.objects.select_related("employee", "recorded_by").all()
     serializer_class = ExitSerializer
+    authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated, IsHRUser]
 
     def perform_create(self, serializer):

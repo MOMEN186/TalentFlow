@@ -16,6 +16,7 @@ from decouple import config
 from datetime import timedelta
 import dj_database_url
 import cloudinary 
+import os
 import cloudinary.uploader
 import cloudinary.api
 
@@ -47,7 +48,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-!)a)t2r=r8qz@9#37qkdp)1n!r3!)c1&2wm5nrg36&^@6+++=9'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = [ "*",  "localhost",
     "127.0.0.1",]
@@ -58,11 +59,11 @@ ALLOWED_HOSTS = [ "*",  "localhost",
 DB_FILES_AUTO_EXPORT_DB_TO_FS = False  # Set to
 
 INSTALLED_APPS = [
-    # 'django.contrib.admin',
+    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
-    # 'django.contrib.sessions',
-    # 'django.contrib.messages',
+    'django.contrib.sessions',
+    'django.contrib.messages',
     'django.contrib.staticfiles',
     'TalentFlow.api',
     'TalentFlow.accounts',   
@@ -169,13 +170,14 @@ SIMPLE_JWT = {
 
 
 MIDDLEWARE = [
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
      "corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',
-    # 'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    #  'django.middleware.csrf.CsrfViewMiddleware',
-    # 'django.contrib.auth.middleware.AuthenticationMiddleware',
-    # 'django.contrib.messages.middleware.MessageMiddleware',
+     'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
         "middlewares.performance.PerformanceMiddleware",
 ]
@@ -198,10 +200,10 @@ TEMPLATES = [
 ]
 CORS_ALLOW_CREDENTIALS = True
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",  # your Vite dev server
-    "http://127.0.0.1:5173",
-]
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:5173",  # your Vite dev server
+#     "http://127.0.0.1:5173",
+# ]
 
 
 WSGI_APPLICATION = 'TalentFlow.wsgi.application'
@@ -258,7 +260,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
-
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
@@ -271,3 +274,36 @@ CORS_ALLOW_HEADERS = [  # include Authorization
 
 ]
 CORS_PREFLIGHT_MAX_AGE = 86400 
+
+# CSRF_TRUSTED_ORIGINS_ENV = os.environ.get('CSRF_TRUSTED_ORIGINS_ENV')
+
+# if CSRF_TRUSTED_ORIGINS_ENV:
+#     CSRF_TRUSTED_ORIGINS = CSRF_TRUSTED_ORIGINS_ENV.split(',')
+# else:
+#     
+#     CSRF_TRUSTED_ORIGINS = [
+#         'http://localhost:5173',
+#         'http://127.0.0.1:5173',
+#     ]
+
+
+CORS_TRUSTED_ORIGINS_ENV = config('CORS_TRUSTED_ORIGINS_ENV', default='')
+
+if CORS_TRUSTED_ORIGINS_ENV:
+    
+    ALLOWED_ORIGINS = [origin.strip() for origin in CORS_TRUSTED_ORIGINS_ENV.split(',')]
+    CORS_ALLOWED_ORIGINS = ALLOWED_ORIGINS
+    CSRF_TRUSTED_ORIGINS = ALLOWED_ORIGINS
+else:
+    
+    CORS_ALLOWED_ORIGINS = [
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+    ]
+    CSRF_TRUSTED_ORIGINS = [
+        'http://localhost:5173',
+        'http://127.0.0.1:5173',
+    ]
+
+
+CSRF_COOKIE_SAMESITE = 'Lax'

@@ -22,8 +22,8 @@ class IsHRUser(BasePermission):
             return True
 
         # Optionally allow staff users (remove if you don't want this)
-        if getattr(user, "is_staff", False):
-            return True
+        # if getattr(user, "is_staff", False):
+        #     return True
 
         # Group-based check (PermissionsMixin provides groups)
         try:

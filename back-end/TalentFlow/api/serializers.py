@@ -1,6 +1,7 @@
 # api/serializers.py
 from rest_framework import serializers
 from .models import Department,JobTitle,Employee,LeaveNote,Exit
+from TalentFlow.accounts.models import CustomUser
 from hr.serializers import PayRollSerializer
 from decimal import Decimal
 
@@ -23,10 +24,23 @@ class EmployeeSerializer(serializers.ModelSerializer):
     salary = PayRollSerializer(source="payrolls",read_only=True,many=True)
     job_title = JobTitleSerializer(read_only=True)
     department = DepartmentSerializer(read_only=True)
+    email = serializers.CharField(source='user.email', read_only=True)
+    is_hr = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
         model = Employee
-        fields = "__all__"
+        fields = (
+            'id', 'first_name', 'last_name', 'middle_name', 'gender',
+            'phone', 'address', 'department', 'job_title', 'status',
+            'email', 'is_hr', 'date_joined', 'termination_date', 'salary'
+        )
+
+    def get_is_hr(self, obj):
+        if obj.user:
+            return obj.user.groups.filter(name='HR').exists()
+        return False
         
+    
 class ExitSerializer(serializers.ModelSerializer):
     employee_id = serializers.PrimaryKeyRelatedField(
         queryset=Employee.objects.all(), source="employee", write_only=True
@@ -84,3 +98,25 @@ class ExitSerializer(serializers.ModelSerializer):
             except Exception:
                 raise serializers.ValidationError("Invalid decimal value for final_settlement_amount.")
         return value
+
+
+class EmployeeCreateSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(write_only=True)
+    password = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = Employee
+        fields = [
+            'first_name', 'last_name', 'middle_name', 'gender', 'phone', 'address', 
+            'department', 'job_title', 'email', 'password', 'status'
+        ]
+
+
+class EmployeeUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Employee
+        
+        fields = [
+            'first_name', 'last_name', 'middle_name', 'gender', 'phone', 'address', 
+            'department', 'job_title', 'status' 
+        ]

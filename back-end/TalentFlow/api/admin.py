@@ -7,11 +7,16 @@ class EmployeeAdmin(admin.ModelAdmin):
         "first_name",
         "middle_name",
         "last_name",
-        "email",
+        "email_display",
         "phone",
         "department",
         "job_title",
     )
+
+    def email_display(self, obj):
+        return obj.user.email if obj.user else 'N/A'
+    
+    email_display.short_description = 'Email' 
 
 @admin.register(Department)
 class DepartmentAdmin(admin.ModelAdmin):
