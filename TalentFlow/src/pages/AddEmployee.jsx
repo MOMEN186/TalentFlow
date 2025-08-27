@@ -277,7 +277,7 @@ function AddEmployee() {
                       value={formData.status}
                       onChange={handleChange}
                     >
-                      <option value="binding">Binding</option>
+                      <option value="pending">Pending</option>
                       <option value="active">Active</option>
                       <option value="notice">On Notice Period</option>
                       <option value="inactive">Inactive</option>

@@ -5,7 +5,7 @@ from functools import wraps
 from django.db import connection
 from django.conf import settings
 
-from ..models import Employee, LeaveNote, Exit
+from ..models import Employee, Exit
 from hr.models import PayRoll
 from rest_framework import viewsets, status
 from rest_framework.response import Response
@@ -80,6 +80,7 @@ class EmployeeViewSet(viewsets.ModelViewSet):
     permission_classes = [IsHRUser]
 
     def get_serializer_class(self):
+        print(self.action)
         if self.action == 'create':
             return EmployeeCreateSerializer
         elif self.action in ['update', 'partial_update']:
@@ -100,33 +101,53 @@ class EmployeeViewSet(viewsets.ModelViewSet):
     @log_method_timing("Employee Create")
     @transaction.atomic
     def create(self, request, *args, **kwargs):
+     try:
         with timer("[EmployeeViewSet.create] Validating serializer data", logger):
-            serializer = self.get_serializer(data=request.data)
-            serializer.is_valid(raise_exception=True)
+            input_serializer = self.get_serializer(data=request.data)
+            if not input_serializer.is_valid():
+                logger.warning(f"[EmployeeViewSet.create] validation failed: {input_serializer.errors}")
+                return Response({"errors": input_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
         with timer("[EmployeeViewSet.create] Extracting user credentials", logger):
-            email = serializer.validated_data.pop('email')
-            password = serializer.validated_data.pop('password')
+            validated = input_serializer.validated_data.copy()
+            email = validated.pop('email')
+            password = validated.pop('password')
 
         with timer("[EmployeeViewSet.create] Creating CustomUser", logger):
-            user = CustomUser.objects.create_user(
-                email=email,
-                password=password,
-                full_name=f"{serializer.validated_data.get('first_name')} {serializer.validated_data.get('last_name')}"
-            )
-        
-        with timer("[EmployeeViewSet.create] Creating Employee record", logger):
-            employee = Employee.objects.create(
-                user=user,
-                **serializer.validated_data
-            )
+            # Wrap create_user to capture any errors
+            try:
+                user = CustomUser.objects.create_user(
+                    email=email,
+                    password=password,
+                    full_name=f"{validated.get('first_name')} {validated.get('last_name')}"
+                )
+            except Exception as e:
+                logger.exception("[EmployeeViewSet.create] create_user failed")
+                raise
 
-        with timer("[EmployeeViewSet.create] Serializing response data", logger):
-            response_serializer = self.get_serializer(employee)
+        with timer("[EmployeeViewSet.create] Creating Employee record", logger):
+            try:
+                employee = Employee.objects.create(
+                    user=user,
+                    **validated
+                )
+            except Exception as e:
+                logger.exception("[EmployeeViewSet.create] Employee.objects.create failed")
+                raise
+
+        with timer("[EmployeeViewSet.create] Serializing response data (read serializer)", logger):
+            # Use the read serializer (EmployeeSerializer) — not the create serializer
+            response_serializer = EmployeeSerializer(employee, context={'request': request})
             response_data = response_serializer.data
 
-        headers = self.get_success_headers(serializer.data)
+        headers = self.get_success_headers(response_data)
         return Response(response_data, status=status.HTTP_201_CREATED, headers=headers)
+
+     except Exception as exc:
+        # ensure atomic rollback and print stacktrace to logs
+        logger.exception("[EmployeeViewSet.create] Unhandled exception during employee creation")
+        # return error info (avoid leaking sensitive internals in prod)
+        return Response({'detail': str(exc)}, status=status.HTTP_400_BAD_REQUEST)
         
     @log_method_timing("Employee Update")
     def update(self, request, *args, **kwargs):
