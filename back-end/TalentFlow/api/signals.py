@@ -16,7 +16,7 @@ def apply_exit_to_employee(sender, instance: Exit, created, **kwargs):
         emp.save(update_fields=["termination_date", "status"])
 
 
-@receiver(post_save, sender=CustomUser)
-def create_employee_for_user(sender, instance, created, **kwargs):
-    if created and (not hasattr(instance, "employee") or instance.is_superuser):
-        Employee.objects.create(user=instance)
+# @receiver(post_save, sender=CustomUser)
+# def create_employee_for_user(sender, instance, created, **kwargs):
+#     if created and (not hasattr(instance, "employee") or instance.is_superuser):
+#         Employee.objects.create(user=instance)
