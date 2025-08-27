@@ -308,6 +308,11 @@ CORS_ALLOW_HEADERS = [
     "x-requested-with",
 ]
 
+ALLOWED_HOSTS = os.environ.get(
+    "ALLOWED_HOSTS",
+    "localhost,127.0.0.1"
+).split(",")
+
 CORS_PREFLIGHT_MAX_AGE = 86400
 
 # CSRF Configuration
@@ -336,3 +341,9 @@ if not DEBUG:
     
     # Referrer policy
     SECURE_REFERRER_POLICY = 'same-origin'
+    
+    CSRF_TRUSTED_ORIGINS = [
+    f"https://{host}"
+    for host in ALLOWED_HOSTS
+    if host not in ["localhost", "127.0.0.1"]
+]
