@@ -1,8 +1,7 @@
 # api/signals.py
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from .models import Exit,Employee
-from TalentFlow.accounts.models import CustomUser
+from .models import Exit
 
 @receiver(post_save, sender=Exit)
 def apply_exit_to_employee(sender, instance: Exit, created, **kwargs):
