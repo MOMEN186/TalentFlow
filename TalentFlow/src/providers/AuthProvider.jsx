@@ -27,7 +27,9 @@ export function AuthProvider({ children }) {
 
 
   const login = async (email, password) => {
-    let response = await fetch("http://127.0.0.1:8000/api/auth/login/", {
+    const baseURL = import.meta.env.VITE_API_BASE;
+    console.log(baseURL)
+    let response = await fetch(`${baseURL}/api/auth/login/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

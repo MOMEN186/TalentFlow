@@ -19,7 +19,7 @@ function Employees() {
 
   const getEmployees = async () => {
     setEmployees([]);
-    let url = `http://127.0.0.1:8000/api/employees/?page=${page}&status=${currentStatus}`;
+    let url = `api/employees/?page=${page}&status=${currentStatus}`;
     const response = await api.get(url);
     console.log(response.data)
     setEmployees(response.data.results);

@@ -5,7 +5,7 @@ import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 import { cookies } from "./cookies";
 
-const API_BASE = "http://127.0.0.1:8000"; // keep consistent
+const API_BASE =  import.meta.env.VITE_API_BASE||"http://127.0.0.1:8000"; // keep consistent
 
 const useAxios = () => {
   const { authTokens, setUser, setAuthTokens } = useContext(AuthContext);
