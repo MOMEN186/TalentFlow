@@ -84,11 +84,12 @@ def logout_view(request):
         token.blacklist()
 
         response = Response({"detail": "Logout successful"})
-        response.delete_cookie("refresh_token", samesite="None" if not settings.DEBUG else "Lax", secure=not settings.DEBUG)
+        # Use basic delete_cookie for broad compatibility across Django versions
+        response.delete_cookie("refresh_token")
         return response
     except TokenError:
         response = Response({"detail": "Invalid or expired token"}, status=status.HTTP_400_BAD_REQUEST)
-        response.delete_cookie("refresh_token", samesite="None" if not settings.DEBUG else "Lax", secure=not settings.DEBUG)
+        response.delete_cookie("refresh_token")
         return response
 
 
