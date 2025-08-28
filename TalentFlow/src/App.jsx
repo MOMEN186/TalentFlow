@@ -6,13 +6,16 @@ import EmployeeDetais from "./pages/EmployeeDetails";
 import Employees from "./pages/Employees";
 import Dashboard from "./pages/Dashboard";
 import PayRoll from "./pages/Payroll";
+import AddPayroll from "./pages/AddPayroll";
 import NotFound from "./pages/NotFound";
 import LeaveNote from "./pages/LeaveNote";
+import AddLeaveNote from "./pages/AddLeaveNote";
 import Login from "./pages/Login";
 import { AuthProvider } from "./providers/AuthProvider";
 import Profile from "./pages/Profile";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Attendance from "./pages/Attendance";
+import AddEditAttendance from "./pages/AddEditAttendance"; 
 
 function App() {
   return (
@@ -40,9 +43,14 @@ function App() {
               <Route path="/employees/edit/:id" element={<AddEmployee />} />
               <Route path="/employees/:page?" element={<ProtectedRoute element={<Employees />} />} />
               <Route path="/payroll/:page?" element={<ProtectedRoute element={<PayRoll />} />} />
+              <Route path="/payroll/add" element={<AddPayroll />} />
+              <Route path="/payroll/edit/:id" element={<AddPayroll />} />
               <Route path="/leave_note/:page?" element={<ProtectedRoute element={<LeaveNote />} />} />
+              <Route path="/leave_notes/add" element={<AddLeaveNote />} />
               <Route path="/profile" element={<ProtectedRoute element={<Profile />} />} />
               <Route path="/attendance/:page?" element={<ProtectedRoute element={<Attendance />} />} />
+              <Route path="/attendance/add" element={<AddEditAttendance />} />
+              <Route path="/attendance/edit/:id" element={<AddEditAttendance />} />
               <Route path="*" element={<ProtectedRoute element={<NotFound />} />} />
             </Routes>
           </div>

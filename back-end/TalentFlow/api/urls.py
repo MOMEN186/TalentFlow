@@ -12,6 +12,8 @@ router.register(r'job-titles', JobTitleViewSet, basename='job-titles')
 
 urlpatterns = [
     path('', include(router.urls)),
+    # path('employees/me/', CurrentEmployeeView.as_view(), name='current-employee'),
     path('employees/<int:pk>/leave-notes/', EmployeeViewSet.as_view({'get': 'leave_notes'}), name='employee-leave-notes'),
     path('employees/<int:pk>/exit-records/', EmployeeViewSet.as_view({'get': 'exit_records'}), name='employee-exit-records'),
+    
 ]

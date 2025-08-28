@@ -13,6 +13,7 @@ from ..serializers import (EmployeeSerializer, EmployeeCreateSerializer, Employe
 from hr.serializers import PayRollSerializer
 from TalentFlow.accounts.models import CustomUser
 from TalentFlow.accounts.permissions import IsHRUser
+from rest_framework import generics, permissions
 from django.db.models import Prefetch
 from django.db import transaction
 from rest_framework.decorators import action
@@ -273,3 +274,29 @@ class EmployeeViewSet(viewsets.ModelViewSet):
             serialized_data = serializer.data
 
         return Response(serialized_data)
+    
+
+
+
+# class CurrentEmployeeView(generics.RetrieveAPIView):
+#     """
+#     View to retrieve the currently logged-in employee's data.
+#     """
+#     serializer_class = EmployeeSerializer
+#     permission_classes = [permissions.IsAuthenticated]
+
+#     def get_object(self):
+#         # The user's employee object is found through the related_name on the OneToOneField
+#         # This assumes the user and employee models are linked
+#         try:
+#             return Employee.objects.get(user=self.request.user)
+#         except Employee.DoesNotExist:
+#             return None
+
+#     def get(self, request, *args, **kwargs):
+#         instance = self.get_object()
+#         if instance:
+#             serializer = self.get_serializer(instance)
+#             return Response(serializer.data)
+#         else:
+#             return Response({"error": "Employee profile not found."}, status=404)

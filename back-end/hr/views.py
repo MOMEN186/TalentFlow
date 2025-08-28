@@ -2,7 +2,7 @@
 from rest_framework import viewsets
 from rest_framework.pagination import PageNumberPagination
 from .models import PayRoll
-from .serializers import PayRollSerializer
+from .serializers import PayRollSerializer, PayRollCreateUpdateSerializer
 import time
 import logging
 
@@ -21,8 +21,15 @@ class PayRollViewSet(viewsets.ModelViewSet):
     - list() supports paginated JSON and ?excel=true full export (no cache, no pagination)
     - get_queryset uses select_related and simple filters for fast browsing
     """
+    # ✅ استخدم الـ Serializer الخاص بالقراءة كافتراضي
     serializer_class = PayRollSerializer
     pagination_class = SmallPagination
+
+    # ✅ قم بتحديد الـ Serializer الذي سيتم استخدامه لكل عملية
+    def get_serializer_class(self):
+        if self.action in ['create', 'update', 'partial_update']:
+            return PayRollCreateUpdateSerializer
+        return PayRollSerializer
 
     def get_queryset(self):
         qs = (
@@ -31,10 +38,9 @@ class PayRollViewSet(viewsets.ModelViewSet):
             .order_by("-year", "-month", "employee__last_name")
         )
 
-        # Lightweight filters commonly used for daily browsing
         year = self.request.query_params.get("year")
         month = self.request.query_params.get("month")
-        department = self.request.query_params.get("department")  # department id or slug as you prefer
+        department = self.request.query_params.get("department")
 
         if year:
             qs = qs.filter(year=year)
@@ -46,24 +52,20 @@ class PayRollViewSet(viewsets.ModelViewSet):
         return qs
 
     def list(self, request, *args, **kwargs):
+        # الكود الخاص بـ list() كما هو
         t0 = time.perf_counter()
         export_excel = request.query_params.get("excel", "false").lower() in ("1", "true", "yes")
         queryset = self.filter_queryset(self.get_queryset())
         t1 = time.perf_counter()
 
-        # --- Excel export (no cache, no pagination) ---
         if export_excel:
-            # If you previously had a custom Excel exporter, reintegrate it here.
-            # For now we fall back to the default list implementation for export.
             return super().list(request, *args, **kwargs)
 
-        # Paginator timing
         paginator = self.paginator
         t2 = time.perf_counter()
         page_obj = paginator.paginate_queryset(queryset, request, view=self)
         t3 = time.perf_counter()
 
-        # Serialization timing
         serializer = self.get_serializer(page_obj, many=True)
         t4 = time.perf_counter()
 

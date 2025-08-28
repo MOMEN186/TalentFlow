@@ -21,7 +21,7 @@ function AddEmployee() {
     password: "",
     password2: "",
     is_hr: false,
-    status: "binding", 
+    status: "pending", 
   });
   const [departments, setDepartments] = useState([]);
   const [jobTitles, setJobTitles] = useState([]);

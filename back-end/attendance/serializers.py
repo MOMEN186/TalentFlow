@@ -20,15 +20,44 @@ class EmployeeMiniSerializer(serializers.ModelSerializer):
 
 class AttendanceSerializer(serializers.ModelSerializer):
     employee = EmployeeMiniSerializer(read_only=True)
-    late_minutes = serializers.SerializerMethodField()
-    overtime_minutes = serializers.SerializerMethodField()
+    # حقول late_minutes و overtime_minutes يتم التعامل معها تلقائيا بواسطة دوال النموذج
+    # لذلك لا نحتاج إلى SerializerMethodField هنا.
 
     class Meta:
         model = Attendance
-        fields ="__all__"
+        fields = "__all__"
 
-    def get_late_minutes(self, obj):
-        return obj.late_minutes() if obj else 0
 
-    def get_overtime_minutes(self, obj):
-        return obj.overtime_minutes() if obj else 0
+class AttendanceCreateUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Attendance
+        fields = ['employee', 'date', 'check_in', 'check_out']
+
+    def create(self, validated_data):
+        # 1. Pop the 'employee' ID from the validated data.
+        employee_id = validated_data.pop('employee')
+        
+        # 2. Get the actual Employee object from the database using the ID.
+        try:
+            employee = Employee.objects.get(pk=employee_id)
+        except Employee.DoesNotExist:
+            raise serializers.ValidationError("Employee not found.")
+
+        # 3. Create the Attendance record with the actual Employee object.
+        attendance = Attendance.objects.create(employee=employee, **validated_data)
+        return attendance
+
+    def update(self, instance, validated_data):
+        # Handle the update process similarly
+        if 'employee' in validated_data:
+            employee_id = validated_data.pop('employee')
+            try:
+                instance.employee = Employee.objects.get(pk=employee_id)
+            except Employee.DoesNotExist:
+                raise serializers.ValidationError("Employee not found.")
+        
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        
+        instance.save()
+        return instance

@@ -14,7 +14,13 @@ class JobTitleSerializer(serializers.ModelSerializer):
     class Meta:
         model = JobTitle
         fields = ['id', 'name']
+
 class LeaveNoteSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(source='employee.name', read_only=True)
+    employee = serializers.PrimaryKeyRelatedField(
+        queryset=Employee.objects.all(),
+        required=True
+    )
     class Meta:
         model = LeaveNote
         fields = '__all__'

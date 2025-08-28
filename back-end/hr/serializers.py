@@ -22,9 +22,13 @@ class EmployeeMiniSerializer(serializers.ModelSerializer):
         )
 
 class PayRollSerializer(serializers.ModelSerializer):
-    # nested serializer instead of SerializerMethodField
     employee = EmployeeMiniSerializer(read_only=True)
 
+    class Meta:
+        model = PayRoll
+        fields = "__all__"
+
+class PayRollCreateUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = PayRoll
         fields = "__all__"
