@@ -229,15 +229,63 @@ This schema is already well-optimized for:
 
 ## 📐 ERD (Entity Relationship Diagram)
 
-\[Placeholder for ERD diagram]
-
+![ERD](./graphviz%20(1).svg)
 ---
 
 ## 🏗️ System Architecture
 
-\[Placeholder for system architecture diagram]
-
+![Alt text](./full%20system%20architecture.png)
 ---
+
+
+⚙️ Business Logic
+
+Attendance Tracking
+
+Each employee can have only one attendance record per day (enforced by unique index (employee, date)).
+
+Late arrivals are calculated against a fixed company start time (default: 9:00 AM).
+
+Overtime is calculated when check-out is later than company end time (default: 5:00 PM).
+
+Payroll Processing
+
+Payroll entries are unique per employee per month (employee, year, month).
+
+Gross Pay = Base Compensation + Bonus.
+
+Net Pay = Gross Pay – Taxes – Deductions.
+
+Late arrivals and absences are deducted according to CompanyPolicy.
+
+Overtime is rewarded according to CompanyPolicy.
+
+Leave & Exit Management
+
+Employees can submit leave notes, which must be approved or denied by HR.
+
+Exit records cannot have an exit_date earlier than the date_joined of the employee.
+
+All exits must have an associated type: voluntary, involuntary, or end of contract.
+
+Security & Integrity
+
+Foreign keys are protected or cascaded to maintain referential integrity:
+
+Attendance and payroll are tied to employees.
+
+Employee exits and leave notes are tied to employee records.
+
+CustomUser email is unique and serves as the login credential.
+
+🗂️ Business Logic Diagram
+
+To visualize workflows like attendance handling, payroll calculation, and leave/exit management, include a diagram:
+
+![Business Logic Diagram](business%20logic%20for%20talent%20flow.png)
+
+(Placeholder: replace with actual diagram once created)
+
 
 ## 📈 Achievements
 
