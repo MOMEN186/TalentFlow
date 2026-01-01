@@ -273,6 +273,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",    # Vite development server  
     "http://127.0.0.1:3000",
     "http://127.0.0.1:5173",
+    'https://talent-flow-one.vercel.app',
 ]
 
 # CSRF trusted origins
@@ -281,6 +282,7 @@ CSRF_TRUSTED_ORIGINS = [
     'http://localhost:5173',
     'http://127.0.0.1:3000',
     'http://127.0.0.1:5173',
+    'https://talent-flow-one.vercel.app',
 ]
 
 # Add Railway domain to CORS and CSRF if available
