@@ -27,7 +27,7 @@ export function AuthProvider({ children }) {
 
 
   const login = async (email, password) => {
-    const baseURL = "https://talentflow-production.up.railway.app";
+    const baseURL = import.meta.env.VITE_API_BASE;
     console.log(baseURL)
     let response = await fetch(`${baseURL}/api/auth/login/`, {
       method: "POST",
