@@ -310,42 +310,62 @@ CORS_ALLOW_HEADERS = [
     "x-requested-with",
 ]
 
-ALLOWED_HOSTS = os.environ.get(
-    "ALLOWED_HOSTS",
-    "localhost,127.0.0.1"
-).split(",")
+# ALLOWED_HOSTS = os.environ.get(
+#     "ALLOWED_HOSTS",
+#     "localhost,127.0.0.1"
+# ).split(",")
 
+# CORS_PREFLIGHT_MAX_AGE = 86400
+
+# # CSRF Configuration
+# CSRF_COOKIE_SAMESITE = 'None' if not DEBUG else 'Lax'
+# CSRF_COOKIE_SECURE = not DEBUG
+# CSRF_COOKIE_HTTPONLY = False
+
+# # Security settings for production
+# if not DEBUG:
+#     # HTTPS settings
+#     SECURE_SSL_REDIRECT = config('SECURE_SSL_REDIRECT', default=True, cast=bool)
+#     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    
+#     # HSTS settings
+#     SECURE_HSTS_SECONDS = 31536000
+#     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+#     SECURE_HSTS_PRELOAD = True
+    
+#     # Security headers
+#     SECURE_CONTENT_TYPE_NOSNIFF = True
+#     SECURE_BROWSER_XSS_FILTER = True
+    
+#     # Cookie security
+#     SESSION_COOKIE_SECURE = True
+#     CSRF_COOKIE_SECURE = True
+    
+#     # Referrer policy
+#     SECURE_REFERRER_POLICY = 'same-origin'
+    
+#     CSRF_TRUSTED_ORIGINS = [
+#     f"https://{host}"
+#     for host in ALLOWED_HOSTS
+#     if host not in ["localhost", "127.0.0.1"]
+# ]
+
+ALLOWED_HOSTS = [
+    'localhost', 
+    '127.0.0.1', 
+    '0.0.0.0', 
+    'talent-flow-one.vercel.app', 
+    'talentflow-production.up.railway.app'
+]
+
+# الحفاظ على الـ CORS و CSRF اللي أضفتيهم فوق ومنع مسحهم
 CORS_PREFLIGHT_MAX_AGE = 86400
 
-# CSRF Configuration
-CSRF_COOKIE_SAMESITE = 'None' if not DEBUG else 'Lax'
-CSRF_COOKIE_SECURE = not DEBUG
-CSRF_COOKIE_HTTPONLY = False
-
-# Security settings for production
 if not DEBUG:
-    # HTTPS settings
-    SECURE_SSL_REDIRECT = config('SECURE_SSL_REDIRECT', default=True, cast=bool)
+    SECURE_SSL_REDIRECT = True
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-    
-    # HSTS settings
-    SECURE_HSTS_SECONDS = 31536000
-    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-    SECURE_HSTS_PRELOAD = True
-    
-    # Security headers
-    SECURE_CONTENT_TYPE_NOSNIFF = True
-    SECURE_BROWSER_XSS_FILTER = True
-    
-    # Cookie security
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
-    
-    # Referrer policy
-    SECURE_REFERRER_POLICY = 'same-origin'
-    
-    CSRF_TRUSTED_ORIGINS = [
-    f"https://{host}"
-    for host in ALLOWED_HOSTS
-    if host not in ["localhost", "127.0.0.1"]
-]
+    # إضافة الرابط يدوياً للتأكد 100%
+    if 'https://talent-flow-one.vercel.app' not in CSRF_TRUSTED_ORIGINS:
+        CSRF_TRUSTED_ORIGINS.append('https://talent-flow-one.vercel.app')
